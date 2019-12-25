@@ -1,5 +1,5 @@
 #Imports
-import socket, re,  datetime, sys, os
+import socket, re, time, datetime, sys, os
 from random import *
 
 #Load settings
@@ -51,7 +51,7 @@ def command_commands():
     commands = load_commands()
     message = "Commands: "
     for command in commands:
-    	message += command + " "
+        message += command + " "
     send_message(message)
     print(colours["LIGHT_GREEN"] + "Commands detected" + colours["END"])
 
@@ -125,9 +125,13 @@ def get_message(line):
     return message
 
 # 4. parsing message
-def parse_message(message, command_location):
+def parse_message(username, message, command_location):
     if len(message) >= 1:
         message_split = message.split(' ')
+        if username == "zxqw":
+            if message_split[0] == "start":
+                print("got here")
+                start_voting()
         if message_split[0] in commands:
             commands[message_split[0]]()
             message_display = get_time() + " " + username + ": " + message
@@ -163,9 +167,9 @@ def get_nth_key(dictionary, n=0):
             return key
     raise IndexError("dictionary index out of range")
 
-def chat_print(username_, message_, time_):
+def chat_print(username_, message_, chat_time):
     if username_ in users.keys():
-        meme = 1
+        meme = 1 #do nothing
     else:
         from random import randint
         r = randint(0, 13)
@@ -173,10 +177,34 @@ def chat_print(username_, message_, time_):
         users[username_] = colours[key]
 
     colour = users[username_]
-    s = time_ + " " + colour + username_ + colours["END"] + ": " + message_
+    s = chat_time + " " + colour + username_ + colours["END"] + ": " + message_
     print(s)
 
+# Voting functions
+def start_voting():
+    print("Starting Voting")
+    voting = True
+    start_time = time.time()
+    move_left = 0
+    move_right = 0
+    move_forward = 0
+    move_backwards = 0
+
+def reset_voting():
+    voting = False
+    move_left = 0
+    move_right = 0
+    move_forward = 0
+    move_backwards = 0
+
 ####################################################################
+
+start_time = time.time()
+voting = False
+move_left = 0
+move_right = 0
+move_forward = 0
+move_backwards = 0
 
 ####################################################################
 #                           Program start                          #
@@ -218,6 +246,10 @@ else:
 conn = connect()
 data = ""
 while True:
+    if voting == True:
+        elapsed_time = time.time() - start_time
+        print(str(elapsed_time))
+        time.sleep(1)
     try:
         data = data + conn.recv(1024).decode('UTF-8')
         data_split = re.split(r"[~\r\n]+", data)
@@ -231,13 +263,11 @@ while True:
                 if line[1] == "PRIVMSG":
                     username = get_username(line[0])
                     message = get_message(line)
-                    time = get_time()
-                    parse_message(message, txt_command_location)
-                    chat_print(username, message, time)
+                    chat_time = get_time()
+                    parse_message(username, message, txt_command_location)
+                    chat_print(username, message, chat_time)
                     #send(message_display)
-                    message_display = time + " " + username + ": " + message
+                    message_display = chat_time + " " + username + ": " + message
                     save(message_display, txt_chat_location)
     except socket.error:
-        pass
-    except socket.timeout:
         print(colours["RED"] + "Socket timeout" + colours["END"])
