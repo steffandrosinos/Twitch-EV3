@@ -201,15 +201,19 @@ if settings['LOGGING'] == 'True':
             os.mkdir(settings['CHANNEL']+'/'+get_date())
         except:
             print(colours["LIGHT_GREEN"] + "Channel day already created" + colours["END"])
-    txt_command_location = settings['CHANNEL'] + "/" + get_date() + "/commands.txt"
-    txt_chat_location = settings['CHANNEL'] + "/" + get_date() + "/chat.txt"
+
+txt_command_location = settings['CHANNEL'] + "/" + get_date() + "/commands.txt"
+txt_chat_location = settings['CHANNEL'] + "/" + get_date() + "/chat.txt"
 
 #load commands
 commands = load_commands()
 print(colours["LIGHT_GREEN"] + "Commands loaded" + colours["END"])
 if settings['LOGGING'] == 'True':
+    print(colours["LIGHT_GREEN"] + "LOGGING ENABLED" + colours["END"])
     print(colours["LIGHT_GREEN"] + txt_command_location + colours["END"])
     print(colours["LIGHT_GREEN"] + txt_chat_location + colours["END"])
+else:
+    print(colours["LIGHT_RED"] + "LOGGING DISABLED" + colours["END"])
 
 conn = connect()
 data = ""
