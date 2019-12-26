@@ -6,7 +6,14 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+public class Server extends Thread {
+	
+	//Voting
+	public boolean voting = false;
+	public int move_forward = 0;
+	public int move_left = 0;
+	public int move_right = 0;
+	public int move_backwards = 0;
 	
 	public int PORT = 7766;
 	public ServerSocket server;
@@ -16,6 +23,43 @@ public class Server {
 
 	public Server(int PORT) {
 		this.PORT = PORT;
+	}
+	
+	public void run() {
+		System.out.println("Waiting for connection");
+		connect();
+		System.out.println("Connected");
+		while(true) {
+			while(!server.isClosed()) {
+				String input = getInput();
+				String[] input_split = input.split(":");
+				String username = input_split[0];
+				String message = "";
+				for(int i=1; i<input_split.length; i++) {
+					message += input_split[i];
+				}
+				message = message.trim();
+				System.out.println(username + ": " + message);
+				if(username.equals("zxqw")) {
+					if(message.equals("start")) {
+						voting = true;
+					}
+				}
+				if(voting) {
+					if(message.equals("!forward")) {
+						move_forward++;
+					} else if(message.equals("!left")){
+						move_left++;
+					} else if(message.equals("!right")){
+						move_right++;
+					} else if(message.equals("!backwards")){
+						move_backwards++;
+					}
+				}
+			}
+			reset();
+			try { Thread.sleep(100); } catch(Exception e) {}
+		}
 	}
 	
 	public void connect() {

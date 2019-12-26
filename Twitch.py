@@ -43,7 +43,7 @@ def load_commands():
     '!left': command_left,
     '!right': command_right,
     '!forward': command_forward,
-    '!backward': command_backward}
+    '!backwards': command_backwards}
     return commands
 
 # Actual Commands
@@ -56,7 +56,7 @@ def command_commands():
     print(colours["LIGHT_GREEN"] + "Commands detected" + colours["END"])
 
 def command_help():
-    message = "To use the robot, use the !forward, !backward, !left and !right commands to control the robot. Keep in mind multiple people might use the robot at the same time."
+    message = "To use the robot, use the !forward, !backwards, !left and !right commands to control the robot. Keep in mind multiple people might use the robot at the same time."
     send_message(message)
     print(colours["LIGHT_GREEN"] + "Help detected" + colours["END"])
 
@@ -67,23 +67,19 @@ def command_info():
 
 def command_left():
     send_message('Moving left')
-    robot_conn.send(bytes("A" + '\n', 'UTF-8'))
     print(colours["LIGHT_GREEN"] + "Left detected" + colours["END"])
 
 def command_right():
     send_message('Moving right')
-    robot_conn.send(bytes("D" + '\n', 'UTF-8'))
     print(colours["LIGHT_GREEN"] + "Right detected" + colours["END"])
 
 def command_forward():
     send_message('Moving forward')
-    robot_conn.send(bytes("W" + '\n', 'UTF-8'))
     print(colours["LIGHT_GREEN"] + "Forward detected" + colours["END"])
 
-def command_backward():
+def command_backwards():
     send_message('Moving backwards')
-    robot_conn.send(bytes("X" + '\n', 'UTF-8'))
-    print(colours["LIGHT_GREEN"] + "Backward detected" + colours["END"])
+    print(colours["LIGHT_GREEN"] + "Backwards detected" + colours["END"])
 
 ####################################################################
 
@@ -128,10 +124,6 @@ def get_message(line):
 def parse_message(username, message, command_location):
     if len(message) >= 1:
         message_split = message.split(' ')
-        if username == "zxqw":
-            if message_split[0] == "start":
-                print("got here")
-                start_voting()
         if message_split[0] in commands:
             commands[message_split[0]]()
             message_display = get_time() + " " + username + ": " + message
@@ -184,6 +176,13 @@ def chat_print(username_, message_, chat_time):
 ####################################################################
 #                           Program start                          #
 ####################################################################
+
+#connect to robot
+host = "192.168.1.94" #Robots ip
+port = 7766
+robot_conn = socket.socket()
+robot_conn.connect((host, port))
+
 #Channel Name
 if len(sys.argv) > 1:
     settings['CHANNEL'] = sys.argv[1].lower()
@@ -235,9 +234,9 @@ while True:
                     username = get_username(line[0])
                     message = get_message(line)
                     chat_time = get_time()
-                    parse_message(username, message, txt_command_location)
+                    #parse_message(username, message, txt_command_location)
                     chat_print(username, message, chat_time)
-                    #send(message_display)
+                    send(username + ":" + message) #check for split[0] split[1] .. split[n] on receiving end
                     save(chat_time + " " + username + ": " + message, txt_chat_location)
     except socket.error:
         print(colours["RED"] + "Socket timeout" + colours["END"])

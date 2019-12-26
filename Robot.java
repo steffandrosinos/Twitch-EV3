@@ -11,12 +11,7 @@ public class Robot {
 	
 	public void start() {
 		
-		server.connect();
-		
-		String ready = server.getInput();
-		while(!ready.equals("ready")) {
-			ready = server.getInput();
-		}
+		server.start();
 		
 	}
 	
