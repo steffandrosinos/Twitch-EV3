@@ -10,9 +10,7 @@ public class Robot {
 	}
 	
 	public void start() {
-		
 		server.start();
-		
 	}
 	
 }

@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Server extends Thread {
 	
 	//Voting
-	public boolean voting = false;
+	public Timer timer;
 	public int move_forward = 0;
 	public int move_left = 0;
 	public int move_right = 0;
@@ -23,12 +23,15 @@ public class Server extends Thread {
 
 	public Server(int PORT) {
 		this.PORT = PORT;
+		timer = new Timer();
 	}
 	
 	public void run() {
 		System.out.println("Waiting for connection");
 		connect();
+		timer.start();
 		System.out.println("Connected");
+		
 		while(true) {
 			while(!server.isClosed()) {
 				String input = getInput();
@@ -42,10 +45,10 @@ public class Server extends Thread {
 				System.out.println(username + ": " + message);
 				if(username.equals("zxqw")) {
 					if(message.equals("start")) {
-						voting = true;
+						timer.setVoting(true);
 					}
 				}
-				if(voting) {
+				if(timer.getVoting()) {
 					if(message.equals("!forward")) {
 						move_forward++;
 					} else if(message.equals("!left")){
@@ -56,10 +59,47 @@ public class Server extends Thread {
 						move_backwards++;
 					}
 				}
+				
+				if(timer.getSeconds() >= 30) {
+					timer.setVoting(false);
+					printResults();
+				}
+				
 			}
 			reset();
 			try { Thread.sleep(100); } catch(Exception e) {}
 		}
+	}
+	
+	public void printResults() {
+		int max = 0;
+		String direction = "";
+		
+		int[] moves = new int[4];
+		moves[0] = move_forward;
+		moves[1] = move_left; 
+		moves[2] = move_right; 
+		moves[3] = move_backwards;
+		
+		for(int i=0; i<4; i++) {
+			if(moves[i] >= max) {
+				max = moves[i];
+				if(i == 0) {
+					direction = "Forward";
+				} else if(i == 1) {
+					direction = "Left";
+				}  else if(i == 2) {
+					direction = "Right";
+				}  else if(i == 3) {
+					direction = "Backwards";
+				} 
+			}
+		}
+		System.out.println("Direction: " + direction);
+		System.out.println("Forward: " + move_forward);
+		System.out.println("Left: " + move_left);
+		System.out.println("Right: " + move_right);
+		System.out.println("Backwards: " + move_backwards);
 	}
 	
 	public void connect() {

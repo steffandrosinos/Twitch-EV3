@@ -1,22 +1,32 @@
 
 public class Timer extends Thread {
 
-	public long start_time;
-	public long current_time;
-	public long timer = 0;
+	public boolean voting = false;
+	public int seconds = 0;
 	
-	public void start() {
-		start_time = System.currentTimeMillis();
+	public void run() {
 		while(true) {
-			current_time = System.currentTimeMillis();
-			if(current_time+35000 == start_time) {
-				System.out.println("30 seonds has passed");
-				start_time = System.currentTimeMillis();
-				timer = 0;
+			while(voting) {
+				seconds += 1;
+				System.out.println("Timer: " + seconds);
+				try { Thread.sleep(1000); } catch(Exception e) {}
 			}
-			timer += 1;
-			try { Thread.sleep(1000); } catch(Exception e) {}
+			seconds = 0;
+			try { Thread.sleep(100); } catch(Exception e) {}
 		}
+	}
+	
+	public synchronized int getSeconds() {
+		return this.seconds;
+	}
+	
+	public synchronized boolean getVoting() {
+		return this.voting;
+	}
+	
+	public synchronized void setVoting(boolean val) {
+		this.voting = val;
+		return;
 	}
 	
 }
