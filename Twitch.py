@@ -1,6 +1,6 @@
 import threading, time, sys, socket
 import chat
-import threads
+import timer
 
 def getWinningVote():
     max = -1
@@ -62,7 +62,7 @@ if settings['LOCAL'] == "True":
 else: print(CYAN + "[Twitch.py] " + END + "Local connection disabled")
 
 #Create objects
-timer = threads.Timer()
+timer = timer.Timer()
 receive_chat = chat.Receive(channel, settings)
 send_chat = chat.Send(channel, settings)
 
