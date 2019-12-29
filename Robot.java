@@ -7,10 +7,14 @@ public class Robot {
 	public Robot(int PORT) {
 		this.PORT = PORT;
 		server = new Server(PORT);
+		server.connect();
 	}
 	
 	public void start() {
-		server.start();
+		while(true) {
+			String direction = server.getInput();
+			System.out.println("Got: " + direction);
+		}
 	}
 	
 }

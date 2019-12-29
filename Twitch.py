@@ -1,4 +1,4 @@
-import threading, time, sys
+import threading, time, sys, socket
 import chat
 import threads
 
@@ -15,15 +15,56 @@ def getWinningVote():
             if i == 3: vote = "Backwards"
     return vote, max
 
+def parse_commands(username, message):
+    if message == "!help":
+        send_mess = "This is a chat controlled robot, you can type the commands !forward, !left, !right or !backwards to vote. The robot chooses a move every 30 seconds. The move with the most votes is what the robot chooses to do."
+        send_chat.send(send_mess)
+    if message == "!about":
+        send_mess = "I'm a computer science student at the University of Liverpool and this is my final year project, a Twitch chat controlled EV3 Robot."
+        send_chat.send(send_mess)
+    if message == "!commands":
+        send_mess = "!forward, !left, !right, !backwards, !help, !about, !commands"
+        send_chat.send(send_mess)
+
+# PROGRAM START
+
+# Load settings
+import settings
+settings = settings.load()
+
 #Channel Name from arguments, defaults to what is set in settings.txt
 channel = ""
 if len(sys.argv) > 1:
     channel = sys.argv[1].lower()
+    if settings['LOCAL'] == "True":
+        try:
+            if sys.argv[2] != None:
+                if sys.argv[2] == "False": settings['LOCAL'] = "False"
+                else: settings['LOCAL_IP'] = sys.argv[2]
+        except: pass
+
+CYAN ="\033[36m"
+END = "\033[0m"
+
+if settings['LOCAL'] == "True":
+    print(CYAN + "[Twitch.py] " + END + "Local connection enabled")
+    print(CYAN + "[Twitch.py] " + END + "Local IP: " + settings['LOCAL_IP'])
+    # connect to robot
+    port = 7766
+    robot_conn = socket.socket()
+    print(CYAN + "[Twitch.py] " + END + "Waiting for Local connection")
+    while True:
+        try:
+            robot_conn.connect((settings['LOCAL_IP'], port))
+            break
+        except: pass
+    print(CYAN + "[Twitch.py] " + END + "Connected")
+else: print(CYAN + "[Twitch.py] " + END + "Local connection disabled")
 
 #Create objects
 timer = threads.Timer()
-receive_chat = chat.Receive(channel)
-send_chat = chat.Send(channel)
+receive_chat = chat.Receive(channel, settings)
+send_chat = chat.Send(channel, settings)
 
 #ADd to threads array
 threads_arr = []
@@ -35,7 +76,8 @@ timer.start()
 receive_chat.start()
 
 time.sleep(0.5)
-send_chat.send("Started")
+if settings['CHANNEL'] == "zxqw":
+    send_chat.send("Started")
 
 last_message = ""
 voting = False
@@ -51,7 +93,9 @@ while True:
             timer.seconds = 0
             winning_vote, winning_amount = getWinningVote()
             total = vote_forward + vote_left + vote_right + vote_backwards
-            send_chat.send("Winning vote: " + str(winning_vote) + " - " + str(winning_amount) + "/" + str(total))
+            send_chat.send("Winning vote: " + winning_vote + " - " + str(winning_amount) + "/" + str(total))
+            if settings['LOCAL'] == "True":
+                robot_conn.send(bytes(winning_vote + '\n', 'UTF-8'))
             vote_forward = 0
             vote_left = 0
             vote_right = 0
@@ -76,10 +120,13 @@ while True:
                 voting = True
                 timer.voting = True
             elif message == "!stop":
-                send_chat.send("Stopping")
+                send_chat.send("Halting voting")
                 voting = False
                 timer.voting = False
                 timer.seconds = 0
+
+        #Parse for commands
+        parse_commands(username, message)
 
         if voting:
             if message == "!forward": vote_forward += 1

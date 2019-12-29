@@ -24,7 +24,10 @@ class Receive(Thread):
         "LIGHT_PINK": "\033[95m",
         "LIGHT_CYAN": "\033[96m",
         "WHITE": "\033[97m",
-        "END": "\033[0m"
+        "BOLD": "\033[1m\033[4m",
+        "END": "\033[0m",
+        "BOLDEND": "\033[0m\033[0m"
+
     }
 
     # User colours
@@ -35,35 +38,34 @@ class Receive(Thread):
 
     last_message = ""
 
-    def __init__(self, channel):
+    def __init__(self, channel, settings):
         super(Receive, self).__init__()
 
         # Load settings
-        import settings
-        self.settings = settings.load()
+        self.settings = settings
 
         if channel != "":
             self.settings['CHANNEL'] = channel
 
-        print(self.colours["LIGHT_GREEN"] + "Channel: " + self.settings['CHANNEL'] + self.colours["END"])
+        print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel: " + self.settings['CHANNEL'])
         # Create file for channel
         if self.settings['LOGGING'] == 'True':
             try:
                 os.mkdir(self.settings['CHANNEL'])
-                print(self.colours["LIGHT_GREEN"] + "Creating channel file" + self.colours["END"])
+                print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Creating channel file")
                 try:
                     os.mkdir(self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
-                    print(self.colours["LIGHT_GREEN"] + "Channel day already created" + self.colours["END"])
+                    print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel day already created")
             except:
-                print(self.colours["LIGHT_GREEN"] + "Channel already created" + self.colours["END"])
+                print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel already created")
                 try:
                     os.mkdir(self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
-                    print(self.colours["LIGHT_GREEN"] + "Channel day already created" + self.colours["END"])
+                    print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel day already created")
 
         self.settings['LOCATION'] = self.settings['CHANNEL'] + "/" + self.get_date() + "/chat.txt"
-        print(self.colours["LIGHT_GREEN"] + self.settings['LOCATION'] + self.colours["END"])
+        print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + self.settings['LOCATION'])
 
     # 1. Connect to IRC
     def connect(self):
@@ -133,7 +135,10 @@ class Receive(Thread):
             key = self.get_nth_key(self.colours, r)
             self.users[username] = self.colours[key]
         colour = self.users[username]
-        print(chat_time + " " + colour + username + self.colours["END"] + ": " + message)
+        if username == "zxqwbot":
+            print("[" + chat_time + "] " + self.colours['BOLD'] + colour + username + self.colours["END"] + self.colours["BOLDEND"] + ": " + message)
+        else:
+            print("[" + chat_time + "] " + colour + username + self.colours["END"] + ": " + message)
 
     # Thread
     def run(self):
@@ -159,9 +164,9 @@ class Receive(Thread):
                             chat_time = self.get_time()
                             self.last_message = str(messages_amount) + "*.*" + username + "*.*" + message
                             self.chat_print(username, message, chat_time)
-                            #self.save(chat_time + " " + username + ": " + message)
+                            self.save(chat_time + " " + username + ": " + message)
             except socket.error:
-                print(self.colours["RED"] + "Socket timeout" + self.colours["END"])
+                print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + self.colours["RED"] + "Socket timeout" + self.colours["END"])
         return
 
 #Sending message to Twitch chat
@@ -170,12 +175,10 @@ class Send():
     settings = {}
     conn = ""
 
-    def __init__(self, channel):
+    def __init__(self, channel, settings):
         super(Send, self).__init__()
 
-        # Load settings
-        import settings
-        self.settings = settings.load()
+        self.settings = settings
 
         if channel != "":
             self.settings['CHANNEL'] = channel
