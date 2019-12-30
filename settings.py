@@ -12,6 +12,7 @@ def load():
     LOGGING = settings_list[5].split("=")[1]
     LOCAL = settings_list[6].split("=")[1]
     LOCAL_IP = settings_list[7].split("=")[1]
+    COLOUR = settings_list[8].split("=")[1]
 
     settings = {}
     settings['TWITCH_HOST'] = TWITCH_HOST
@@ -22,5 +23,6 @@ def load():
     settings['LOGGING'] = LOGGING
     settings['LOCAL'] = LOCAL
     settings['LOCAL_IP'] = LOCAL_IP
+    settings['COLOUR'] = COLOUR
 
     return settings

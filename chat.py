@@ -47,27 +47,53 @@ class Receive(Thread):
         if channel != "":
             self.settings['CHANNEL'] = channel
 
-        print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel: " + self.settings['CHANNEL'])
+        self.cprint("Channel: " + self.settings['CHANNEL'])
         # Create file for channel
         if self.settings['LOGGING'] == 'True':
             try:
                 os.mkdir(self.settings['CHANNEL'])
-                print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Creating channel file")
+                self.cprint("Creating channel file")
                 try:
                     os.mkdir(self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
-                    print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel day already created")
+                    self.cprint("Channel day already created")
             except:
-                print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel already created")
+                self.cprint("Channel already created")
                 try:
                     os.mkdir(self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
-                    print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + "Channel day already created")
+                    self.cprint("Channel day already created")
 
         self.settings['LOCATION'] = self.settings['CHANNEL'] + "/" + self.get_date() + "/chat.txt"
-        print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + self.settings['LOCATION'])
+        self.cprint(self.settings['LOCATION'])
 
-    # 1. Connect to IRC
+    # 1. Coloured Print
+    def cprint(self, message):
+        if self.settings['COLOUR'] == "True":
+            print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + message)
+        else:
+            print("[chat.py] " + message)
+
+    # 2. Print username with colour and message
+    def chat_print(self, username, message, chat_time):
+        if self.settings['COLOUR'] == "True":
+            if username in self.users.keys():
+                pass
+            else:
+                from random import randint
+                r = randint(0, 13)
+                key = self.get_nth_key(self.colours, r)
+                self.users[username] = self.colours[key]
+            colour = self.users[username]
+            if username == "zxqwbot":
+                print("[" + chat_time + "] " + self.colours['BOLD'] + colour + username + self.colours["END"] +
+                      self.colours["BOLDEND"] + ": " + message)
+            else:
+                print("[" + chat_time + "] " + colour + username + self.colours["END"] + ": " + message)
+        else:
+            print("[" + chat_time + "] " + username + ": " + message)
+
+    # 3. Connect to IRC
     def connect(self):
         conn = socket.socket()
         conn.connect((self.settings['TWITCH_HOST'], self.settings['TWITCH_PORT']))
@@ -76,7 +102,7 @@ class Receive(Thread):
         conn.send(bytes('JOIN #' + self.settings['CHANNEL'] + '\r\n', 'UTF-8'))
         return conn
 
-    # 2. get username of sender
+    # 4. get username of sender
     def get_username(self, line):
         username = ""
         for char in line:
@@ -86,7 +112,7 @@ class Receive(Thread):
                 username += char
         return username
 
-    # 3. get message
+    # 5. get message
     def get_message(self, line):
         message = ""
         i = 3
@@ -101,22 +127,22 @@ class Receive(Thread):
             i += 1
         return message
 
-    # 4. saving input message to file
+    # 6. saving input message to file
     def save(self, message):
         if self.settings['LOGGING'] == 'True':
             import io
             with io.open(self.settings['LOCATION'], "a", encoding="utf-8") as myfile:
                 myfile.write(message + "\n")
 
-    # 5. Get time
+    # 7. Get time
     def get_time(self):
         return datetime.datetime.now().strftime('%H:%M:%S')
 
-    # 6. Get Date
+    # 8. Get Date
     def get_date(self):
         return datetime.datetime.now().strftime('%d-%m-%y')
 
-    # 7. Get index from Users given key
+    # 9. Get index from Users given key
     def get_nth_key(self, dictionary, n=0):
         if n < 0:
             n += len(dictionary)
@@ -124,21 +150,6 @@ class Receive(Thread):
             if i == n:
                 return key
         raise IndexError("dictionary index out of range")
-
-    # 8. Print username with colour and message
-    def chat_print(self, username, message, chat_time):
-        if username in self.users.keys():
-            pass
-        else:
-            from random import randint
-            r = randint(0, 13)
-            key = self.get_nth_key(self.colours, r)
-            self.users[username] = self.colours[key]
-        colour = self.users[username]
-        if username == "zxqwbot":
-            print("[" + chat_time + "] " + self.colours['BOLD'] + colour + username + self.colours["END"] + self.colours["BOLDEND"] + ": " + message)
-        else:
-            print("[" + chat_time + "] " + colour + username + self.colours["END"] + ": " + message)
 
     # Thread
     def run(self):

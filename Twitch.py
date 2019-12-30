@@ -1,6 +1,14 @@
-import threading, time, sys, socket
+import threading, time, sys, socket, os
 import chat
 import timer
+
+def cprint(message):
+    cyan = "\033[36m"
+    end = "\033[0m"
+    if settings['COLOUR'] == "True":
+        print(cyan + "[Twitch.py] " + end + message)
+    else:
+        print("[Twitch.py] " + message)
 
 def getWinningVote():
     max = -1
@@ -43,30 +51,28 @@ if len(sys.argv) > 1:
                 else: settings['LOCAL_IP'] = sys.argv[2]
         except: pass
 
-CYAN ="\033[36m"
-END = "\033[0m"
-
 if settings['LOCAL'] == "True":
-    print(CYAN + "[Twitch.py] " + END + "Local connection enabled")
-    print(CYAN + "[Twitch.py] " + END + "Local IP: " + settings['LOCAL_IP'])
+    cprint("Local connection enabled")
+    cprint("Local IP: " + settings['LOCAL_IP'])
+
     # connect to robot
     port = 7766
     robot_conn = socket.socket()
-    print(CYAN + "[Twitch.py] " + END + "Waiting for Local connection")
+    cprint("Waiting for Local connection")
     while True:
         try:
             robot_conn.connect((settings['LOCAL_IP'], port))
             break
         except: pass
-    print(CYAN + "[Twitch.py] " + END + "Connected")
-else: print(CYAN + "[Twitch.py] " + END + "Local connection disabled")
+    cprint("Connected")
+else: cprint("Local connection disabled")
 
 #Create objects
 timer = timer.Timer()
 receive_chat = chat.Receive(channel, settings)
 send_chat = chat.Send(channel, settings)
 
-#ADd to threads array
+#Add to threads array
 threads_arr = []
 threads_arr.append(timer)
 threads_arr.append(receive_chat)
