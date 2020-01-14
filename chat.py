@@ -51,20 +51,23 @@ class Receive(Thread):
         # Create file for channel
         if self.settings['LOGGING'] == 'True':
             try:
-                os.mkdir(self.settings['CHANNEL'])
+                os.mkdir('Logs')
+            except:
+                pass
+            try:
+                os.mkdir('Logs/' + self.settings['CHANNEL'])
                 self.cprint("Creating channel file")
                 try:
-                    os.mkdir(self.settings['CHANNEL'] + '/' + self.get_date())
+                    os.mkdir('Logs/' + self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
                     self.cprint("Channel day already created")
             except:
                 self.cprint("Channel already created")
                 try:
-                    os.mkdir(self.settings['CHANNEL'] + '/' + self.get_date())
+                    os.mkdir('Logs/' + self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
                     self.cprint("Channel day already created")
-
-        self.settings['LOCATION'] = self.settings['CHANNEL'] + "/" + self.get_date() + "/chat.txt"
+        self.settings['LOCATION'] = "Logs/" + self.settings['CHANNEL'] + "/" + self.get_date() + "/chat.txt"
         self.cprint(self.settings['LOCATION'])
 
     # 1. Coloured Print
