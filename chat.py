@@ -81,7 +81,7 @@ class Receive(Thread):
 
         if self.settings['COLOUR'] == True:
             colour = self.users[username]
-            if username == "zxqwbot":
+            if username == self.settings['USERNAME']:
                 print("[" + chat_time + "] " + self.colours['BOLD'] + colour + username + self.colours["END"] +
                       self.colours["BOLDEND"] + ": " + message)
             else:
@@ -177,7 +177,6 @@ class Receive(Thread):
                             message = self.get_message(line)
                             message = message[:-1]
                             tags = self.get_tags(line[0])
-                            print("Tags: " + tags)
                             messages_amount += 1
                             chat_time = self.get_time()
                             self.last_message = str(messages_amount) + "*.*" + username + "*.*" + message
