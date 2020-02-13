@@ -27,7 +27,6 @@ class Receive(Thread):
         "BOLD": "\033[1m\033[4m",
         "END": "\033[0m",
         "BOLDEND": "\033[0m\033[0m"
-
     }
 
     # User colours
@@ -38,18 +37,15 @@ class Receive(Thread):
 
     last_message = ""
 
-    def __init__(self, channel, settings):
+    def __init__(self, settings):
         super(Receive, self).__init__()
 
         # Load settings
         self.settings = settings
 
-        if channel != "":
-            self.settings['CHANNEL'] = channel
-
         self.cprint("Channel: " + self.settings['CHANNEL'])
         # Create file for channel
-        if self.settings['LOGGING'] == 'True':
+        if self.settings['LOGGING'] == True:
             try:
                 os.mkdir('Logs')
             except:
@@ -67,26 +63,23 @@ class Receive(Thread):
                     os.mkdir('Logs/' + self.settings['CHANNEL'] + '/' + self.get_date())
                 except:
                     self.cprint("Channel day already created")
-        self.settings['LOCATION'] = "Logs/" + self.settings['CHANNEL'] + "/" + self.get_date() + "/chat.txt"
-        self.cprint(self.settings['LOCATION'])
+            self.settings['LOCATION'] = "Logs/" + self.settings['CHANNEL'] + "/" + self.get_date() + "/chat.txt"
+            self.cprint(self.settings['LOCATION'])
+        else:
+            self.cprint("Logging disabled")
 
     # 1. Coloured Print
     def cprint(self, message):
-        if self.settings['COLOUR'] == "True":
+        if self.settings['COLOUR'] == True:
             print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + message)
         else:
             print("[chat.py] " + message)
 
     # 2. Print username with colour and message
     def chat_print(self, username, message, chat_time):
-        if self.settings['COLOUR'] == "True":
-            if username in self.users.keys():
-                pass
-            else:
-                from random import randint
-                r = randint(0, 13)
-                key = self.get_nth_key(self.colours, r)
-                self.users[username] = self.colours[key]
+        #check for tags
+
+        if self.settings['COLOUR'] == True:
             colour = self.users[username]
             if username == "zxqwbot":
                 print("[" + chat_time + "] " + self.colours['BOLD'] + colour + username + self.colours["END"] +
@@ -103,6 +96,9 @@ class Receive(Thread):
         conn.send(bytes('PASS ' + self.settings['OAUTH'] + '\r\n', 'UTF-8'))
         conn.send(bytes('NICK ' + self.settings['USERNAME'] + '\r\n', 'UTF-8'))
         conn.send(bytes('JOIN #' + self.settings['CHANNEL'] + '\r\n', 'UTF-8'))
+        conn.send(bytes('CAP REQ :twitch.tv/membership' + '\r\n', 'UTF-8'))
+        conn.send(bytes('CAP REQ :twitch.tv/tags' + '\r\n', 'UTF-8'))
+        conn.send(bytes('CAP REQ :twitch.tv/commands' + '\r\n', 'UTF-8'))
         return conn
 
     # 4. get username of sender
@@ -113,26 +109,34 @@ class Receive(Thread):
                 break
             if char != ":":
                 username += char
+        if username in self.users.keys():
+            pass
+        else:
+            from random import randint
+            r = randint(0, 13)
+            key = self.get_nth_key(self.colours, r)
+            self.users[username] = self.colours[key]
         return username
 
     # 5. get message
     def get_message(self, line):
         message = ""
-        i = 3
-        length = len(line)
-        while i < length:
-            if i == 3:
-                tmp = line[i]
-                message += tmp[1:]
+        i = 4
+        while i < len(line):
+            if i == 4:
+                message += line[i][1:]
                 message += " "
             else:
                 message += line[i] + " "
             i += 1
         return message
 
+    def get_tags(self, line):
+        return line
+
     # 6. saving input message to file
     def save(self, message):
-        if self.settings['LOGGING'] == 'True':
+        if self.settings['LOGGING'] == True:
             import io
             with io.open(self.settings['LOCATION'], "a", encoding="utf-8") as myfile:
                 myfile.write(message + "\n")
@@ -147,11 +151,9 @@ class Receive(Thread):
 
     # 9. Get index from Users given key
     def get_nth_key(self, dictionary, n=0):
-        if n < 0:
-            n += len(dictionary)
+        if n < 0: n += len(dictionary)
         for i, key in enumerate(dictionary.keys()):
-            if i == n:
-                return key
+            if i == n: return key
         raise IndexError("dictionary index out of range")
 
     # Thread
@@ -170,10 +172,12 @@ class Receive(Thread):
                     if len(line) >= 1:
                         if line[0] == "PING":
                             conn.send(bytes('PONG ' + line[1] + '\r\n', 'UTF-8'))
-                        if line[1] == "PRIVMSG":
-                            username = self.get_username(line[0])
+                        if line[2] == "PRIVMSG":
+                            username = self.get_username(line[1])
                             message = self.get_message(line)
                             message = message[:-1]
+                            tags = self.get_tags(line[0])
+                            print("Tags: " + tags)
                             messages_amount += 1
                             chat_time = self.get_time()
                             self.last_message = str(messages_amount) + "*.*" + username + "*.*" + message
@@ -189,14 +193,9 @@ class Send():
     settings = {}
     conn = ""
 
-    def __init__(self, channel, settings):
+    def __init__(self, settings):
         super(Send, self).__init__()
-
         self.settings = settings
-
-        if channel != "":
-            self.settings['CHANNEL'] = channel
-
         self.conn = self.connect()
 
     # Connect to IRC

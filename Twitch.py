@@ -1,11 +1,12 @@
 import threading, time, sys, socket, os
 import chat
 import timer
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 def cprint(message):
     cyan = "\033[36m"
     end = "\033[0m"
-    if settings['COLOUR'] == "True":
+    if settings['COLOUR'] == True:
         print(cyan + "[Twitch.py] " + end + message)
     else:
         print("[Twitch.py] " + message)
@@ -40,18 +41,29 @@ def parse_commands(username, message):
 import settings
 settings = settings.load()
 
-#Channel Name from arguments, defaults to what is set in settings.txt
-channel = ""
-if len(sys.argv) > 1:
-    channel = sys.argv[1].lower()
-    if settings['LOCAL'] == "True":
-        try:
-            if sys.argv[2] != None:
-                if sys.argv[2] == "False": settings['LOCAL'] = "False"
-                else: settings['LOCAL_IP'] = sys.argv[2]
-        except: pass
+parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, description="Simple Twitch IRC Bot")
 
-if settings['LOCAL'] == "True":
+parser.add_argument("-c", "--channel", required=True, help="Twitch channel to connect to")
+#parser.add_argument("-p", "--port", type=int, help="Change server port. Default is 7766")
+parser.add_argument("--disable-logging", action="store_true", dest="disable_logging", default=False, help="Disables chat logging")
+parser.add_argument("--local", action="store_true", dest="local", default=False, help="Enables robot connection")
+parser.add_argument("--ip", dest="local_ip", help="Robot IP, required if -l is given")
+parser.add_argument("--no-colour", action="store_true", dest="no_colour", default=False, help="Don't colour terminal output")
+
+args = parser.parse_args()
+
+settings['CHANNEL'] = args.channel.lower()
+settings['LOGGING'] = not args.disable_logging
+settings['LOCAL'] = args.local
+if args.local:
+    if args.local_ip is not None:
+        settings['LOCAL'] = True
+        settings['LOCAL_IP'] = args.local_ip
+    else:
+        parser.error("-l/--local requires --ip")
+settings['COLOUR'] = not args.no_colour
+
+if settings['LOCAL'] == True:
     cprint("Local connection enabled")
     cprint("Local IP: " + settings['LOCAL_IP'])
 
@@ -69,13 +81,8 @@ else: cprint("Local connection disabled")
 
 #Create objects
 timer = timer.Timer()
-receive_chat = chat.Receive(channel, settings)
-send_chat = chat.Send(channel, settings)
-
-#Add to threads array
-threads_arr = []
-threads_arr.append(timer)
-threads_arr.append(receive_chat)
+receive_chat = chat.Receive(settings)
+send_chat = chat.Send(settings)
 
 #Start threads
 timer.start()
@@ -100,7 +107,7 @@ while True:
             winning_vote, winning_amount = getWinningVote()
             total = vote_forward + vote_left + vote_right + vote_backwards
             send_chat.send("Winning vote: " + winning_vote + " - " + str(winning_amount) + "/" + str(total))
-            if settings['LOCAL'] == "True":
+            if settings['LOCAL'] == True:
                 robot_conn.send(bytes(winning_vote + '\n', 'UTF-8'))
             vote_forward = 0
             vote_left = 0
