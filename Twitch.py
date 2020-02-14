@@ -5,6 +5,8 @@ import chat
 import timer
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
+# Testing
+
 def cprint(message):
     cyan = "\033[36m"
     end = "\033[0m"
