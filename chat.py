@@ -29,6 +29,8 @@ class Receive(Thread):
         "BOLDEND": "\033[0m\033[0m"
     }
 
+    # Testing new setup
+
     # User colours
     users = {
         "zxqw": "\033[31m",
