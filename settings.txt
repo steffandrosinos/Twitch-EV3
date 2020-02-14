@@ -1,4 +1,4 @@
 TWITCH_HOST=irc.twitch.tv
 TWITCH_PORT=6667
-USERNAME=zxqwbot
-OAUTH=oauth:33rieev0fi390f066pfff0mwmh41hs
+USERNAME=
+OAUTH=oauth:
