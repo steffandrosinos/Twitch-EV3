@@ -29,8 +29,6 @@ class Receive(Thread):
         "BOLDEND": "\033[0m\033[0m"
     }
 
-    # Testing new setup
-
     # User colours
     users = {
         "zxqw": "\033[31m",
@@ -107,12 +105,9 @@ class Receive(Thread):
     def get_username(self, line):
         username = ""
         for char in line:
-            if char == "!":
-                break
-            if char != ":":
-                username += char
-        if username in self.users.keys():
-            pass
+            if char == "!": break
+            if char != ":": username += char
+        if username in self.users.keys(): pass
         else:
             from random import randint
             r = randint(0, 13)

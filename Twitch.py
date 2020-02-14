@@ -1,4 +1,6 @@
 import threading, time, sys, socket, os
+import time
+import socket
 import chat
 import timer
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
@@ -6,7 +8,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 def cprint(message):
     cyan = "\033[36m"
     end = "\033[0m"
-    if settings['COLOUR'] == True:
+    if settings['COLOUR'] is True:
         print(cyan + "[Twitch.py] " + end + message)
     else:
         print("[Twitch.py] " + message)
@@ -18,10 +20,14 @@ def getWinningVote():
     for i in range(4):
         if votes[i] >= max:
             max = votes[i]
-            if i == 0: vote = "Forward"
-            if i == 1: vote = "Left"
-            if i == 2: vote = "Right"
-            if i == 3: vote = "Backwards"
+            if i == 0:
+                vote = "Forward"
+            if i == 1:
+                vote = "Left"
+            if i == 2:
+                vote = "Right"
+            if i == 3:
+                vote = "Backwards"
     return vote, max
 
 def parse_commands(username, message):
@@ -36,7 +42,6 @@ def parse_commands(username, message):
         send_chat.send(send_mess)
 
 # PROGRAM START
-
 # Load settings
 import settings
 settings = settings.load()
@@ -44,7 +49,7 @@ settings = settings.load()
 parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, description="Simple Twitch IRC Bot")
 
 parser.add_argument("-c", "--channel", required=True, help="Twitch channel to connect to")
-#parser.add_argument("-p", "--port", type=int, help="Change server port. Default is 7766")
+# parser.add_argument("-p", "--port", type=int, help="Change server port. Default is 7766")
 parser.add_argument("--disable-logging", action="store_true", dest="disable_logging", default=False, help="Disables chat logging")
 parser.add_argument("--local", action="store_true", dest="local", default=False, help="Enables robot connection")
 parser.add_argument("--ip", dest="local_ip", help="Robot IP, required if -l is given")
@@ -79,12 +84,12 @@ if settings['LOCAL'] == True:
     cprint("Connected")
 else: cprint("Local connection disabled")
 
-#Create objects
+# Create objects
 timer = timer.Timer()
 receive_chat = chat.Receive(settings)
 send_chat = chat.Send(settings)
 
-#Start threads
+# Start threads
 timer.start()
 receive_chat.start()
 
@@ -120,7 +125,7 @@ while True:
         last_message = receive_chat.last_message
         message_split = last_message.split("*.*")
         username = message_split[1]
-        #Just in case someone uses "*.*" in chat
+        # Just in case someone uses "*.*" in chat
         message_split.pop(0)
         message_split.pop(0)
         message = ""
@@ -138,7 +143,7 @@ while True:
                 timer.voting = False
                 timer.seconds = 0
 
-        #Parse for commands
+        # Parse for commands
         parse_commands(username, message)
 
         if voting:
