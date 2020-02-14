@@ -1,4 +1,3 @@
-import threading, time, sys, socket, os
 import time
 import socket
 import chat
@@ -54,12 +53,14 @@ parser.add_argument("--disable-logging", action="store_true", dest="disable_logg
 parser.add_argument("--local", action="store_true", dest="local", default=False, help="Enables robot connection")
 parser.add_argument("--ip", dest="local_ip", help="Robot IP, required if -l is given")
 parser.add_argument("--no-colour", action="store_true", dest="no_colour", default=False, help="Don't colour terminal output")
+parser.add_argument("-t", "--time", type=int, dest="voting_time", default=30, help="Custom voting time")
 
 args = parser.parse_args()
 
 settings['CHANNEL'] = args.channel.lower()
 settings['LOGGING'] = not args.disable_logging
 settings['LOCAL'] = args.local
+settings['LOCAL_IP'] = args.local_ip
 if args.local:
     if args.local_ip is not None:
         settings['LOCAL'] = True
@@ -67,6 +68,7 @@ if args.local:
     else:
         parser.error("-l/--local requires --ip")
 settings['COLOUR'] = not args.no_colour
+settings['VOTING_TIME'] = args.voting_time
 
 if settings['LOCAL'] == True:
     cprint("Local connection enabled")
@@ -105,7 +107,7 @@ vote_right = 0
 vote_backwards = 0
 while True:
     if voting:
-        if timer.seconds >= 30:
+        if timer.seconds >= settings['VOTING_TIME']:
             voting = False
             timer.voting = False
             timer.seconds = 0
