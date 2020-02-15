@@ -1,3 +1,5 @@
+package Main;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,7 +11,6 @@ import java.net.Socket;
 public class Server {
 	
 	//Voting
-	public Timer timer;
 	public int move_forward = 0;
 	public int move_left = 0;
 	public int move_right = 0;
