@@ -27,6 +27,8 @@ def getWinningVote():
                 vote = "Right"
             if i == 3:
                 vote = "Backwards"
+    if max == 0:
+        vote = "none"
     return vote, max
 
 def parse_commands(username, message):
@@ -39,6 +41,16 @@ def parse_commands(username, message):
     if message == "!commands":
         send_mess = "!forward, !left, !right, !backwards, !help, !about, !commands"
         send_chat.send(send_mess)
+
+def obs_data(voting_, vote_forward_, vote_left_, vote_right_, vote_backwards_):
+    if voting_:
+        voting_str = "true"
+    else:
+        voting_str = "false"
+    data = "var voting = " + voting_str + ";\nvar voting_left = " + str(vote_left_) + ";\nvar voting_right = " + str(vote_right_) + ";\nvar voting_forward = " + str(vote_forward_) + ";\nvar voting_backwards = " + str(vote_backwards_) + ";"
+    obs_location = "OBS/data.js"
+    with open(obs_location, 'w') as filetowrite:
+        filetowrite.write(data)
 
 # PROGRAM START
 # Load settings
@@ -54,6 +66,7 @@ parser.add_argument("--local", action="store_true", dest="local", default=False,
 parser.add_argument("--ip", dest="local_ip", help="Robot IP, required if -l is given")
 parser.add_argument("--no-colour", action="store_true", dest="no_colour", default=False, help="Don't colour terminal output")
 parser.add_argument("-t", "--time", type=int, dest="voting_time", default=30, help="Custom voting time")
+parser.add_argument("--OBS", action="store_true", dest="obs", default=False, help="Enables OBS overlay data")
 
 args = parser.parse_args()
 
@@ -69,6 +82,7 @@ if args.local:
         parser.error("-l/--local requires --ip")
 settings['COLOUR'] = not args.no_colour
 settings['VOTING_TIME'] = args.voting_time
+settings['OBS'] = args.obs
 
 if settings['LOCAL'] == True:
     cprint("Local connection enabled")
@@ -97,7 +111,7 @@ receive_chat.start()
 
 time.sleep(0.5)
 if settings['CHANNEL'] == "zxqw":
-    send_chat.send("Started")
+    send_chat.send("Running")
 
 last_message = ""
 voting = False
@@ -105,6 +119,8 @@ vote_forward = 0
 vote_left = 0
 vote_right = 0
 vote_backwards = 0
+if settings['OBS']:
+    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
 while True:
     if voting:
         if timer.seconds >= settings['VOTING_TIME']:
@@ -113,16 +129,20 @@ while True:
             timer.seconds = 0
             winning_vote, winning_amount = getWinningVote()
             total = vote_forward + vote_left + vote_right + vote_backwards
-            send_chat.send("Winning vote: " + winning_vote + " - " + str(winning_amount) + "/" + str(total))
-            if settings['LOCAL'] == True:
-                robot_conn.send(bytes(winning_vote + '\n', 'UTF-8'))
+            if winning_vote != "none":
+                send_chat.send("Winning vote: " + winning_vote + " - " + str(winning_amount) + "/" + str(total))
+                if settings['LOCAL'] == True:
+                    robot_conn.send(bytes(winning_vote + '\n', 'UTF-8'))
+            else:
+                send_chat.send("No votes recorded - resetting")
             vote_forward = 0
             vote_left = 0
             vote_right = 0
             vote_backwards = 0
             voting = True
             timer.voting = True
-
+            if settings['OBS']:
+                obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
     if last_message != receive_chat.last_message:
         last_message = receive_chat.last_message
         message_split = last_message.split("*.*")
@@ -135,13 +155,36 @@ while True:
             message += split
 
         if username == "zxqw":
+            if message == "!sforward":
+                send_chat.send("Forced Forward")
+                if settings['LOCAL'] == True:
+                    robot_conn.send(bytes("Forward" + '\n', 'UTF-8'))
+            elif message == "!sleft":
+                send_chat.send("Forced Left")
+                if settings['LOCAL'] == True:
+                    robot_conn.send(bytes("Left" + '\n', 'UTF-8'))
+            elif message == "!sright":
+                send_chat.send("Forced right")
+                if settings['LOCAL'] == True:
+                    robot_conn.send(bytes("Right" + '\n', 'UTF-8'))
+            elif message == "!sbackwards":
+                send_chat.send("Forced backwards")
+                if settings['LOCAL'] == True:
+                    robot_conn.send(bytes("Backwards" + '\n', 'UTF-8'))
+
             if message == "!start":
-                send_chat.send("Accepting Votes")
+                send_chat.send("Accepting Votes, getting results every " + str(settings['VOTING_TIME']) + " seconds")
                 voting = True
                 timer.voting = True
             elif message == "!stop":
-                send_chat.send("Halting voting")
+                send_chat.send("Not accepting votes")
                 voting = False
+                vote_forward = 0
+                vote_left = 0
+                vote_right = 0
+                vote_backwards = 0
+                if settings['OBS']:
+                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
                 timer.voting = False
                 timer.seconds = 0
 
@@ -149,9 +192,21 @@ while True:
         parse_commands(username, message)
 
         if voting:
-            if message == "!forward": vote_forward += 1
-            if message == "!left": vote_left += 1
-            if message == "!right": vote_right += 1
-            if message == "!backwards": vote_backwards += 1
+            if message == "!forward":
+                vote_forward += 1
+                if settings['OBS']:
+                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+            if message == "!left":
+                vote_left += 1
+                if settings['OBS']:
+                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+            if message == "!right":
+                vote_right += 1
+                if settings['OBS']:
+                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+            if message == "!backwards":
+                vote_backwards += 1
+                if settings['OBS']:
+                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
 
     time.sleep(0.01)

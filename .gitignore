@@ -1,6 +1,9 @@
 __pycache__
 Logs
-OBS
+OBS/chart
+OBS/chat.*
+OBS/jquery-3.4.1.min.js
+OBS/style.css
 settings.txt
 *.java
 *.pyc
