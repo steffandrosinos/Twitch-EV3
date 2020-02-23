@@ -169,7 +169,16 @@ class Receive(Thread):
     def obs_data_update(self):
         data = ""
         for i in range(0, len(self.messages)):
-            data += "'" + self.messages[i] + "',\n"
+            data += "'"
+            for char in self.messages[i]:
+                # User can type escape character "\" which will break code.
+                # Warninge fix this by making sure we replace every backslash with
+                # two backslashes
+                if char != "\\":
+                    data += char
+                else:
+                    data += "\\\\"
+            data += "',\n"
         final = "var messages = [\n" + data + "];"
         obs_location = "OBS/chat_data.js"
         with open(obs_location, 'w') as filetowrite:
@@ -191,7 +200,7 @@ class Receive(Thread):
                     if len(line) >= 1:
                         if line[0] == "PING":
                             conn.send(bytes('PONG ' + line[1] + '\r\n', 'UTF-8'))
-                        if line[2] == "PRIVMSG":
+                        elif line[2] == "PRIVMSG":
                             username = self.get_username(line[1])
                             message = self.get_message(line)
                             message = message[:-1]
