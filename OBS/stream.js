@@ -2,7 +2,7 @@ function updateData() {
   $("#data_script").remove();
   var script = document.createElement('script');
   script.onload = function () {};
-  script.src = "data.js";
+  script.src = "stream_data.js";
   script.id = "data_script";
   document.head.appendChild(script);
 }

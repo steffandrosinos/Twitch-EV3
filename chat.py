@@ -36,6 +36,7 @@ class Receive(Thread):
     }
 
     last_message = ""
+    messages = []
 
     def __init__(self, settings):
         super(Receive, self).__init__()
@@ -153,6 +154,27 @@ class Receive(Thread):
             if i == n: return key
         raise IndexError("dictionary index out of range")
 
+    def obs_data(self, message):
+        if (len(self.messages) < 10):
+            self.messages.append(message)
+        else:
+            # Move all elements up one
+            temp = []
+            for i in range(1, len(self.messages)):
+                temp.append(self.messages[i])
+            temp.append(message)
+            self.messages = temp
+        self.obs_data_update()
+
+    def obs_data_update(self):
+        data = ""
+        for i in range(0, len(self.messages)):
+            data += "'" + self.messages[i] + "',\n"
+        final = "var messages = [\n" + data + "];"
+        obs_location = "OBS/chat_data.js"
+        with open(obs_location, 'w') as filetowrite:
+            filetowrite.write(final)
+
     # Thread
     def run(self):
         conn = self.connect()
@@ -173,12 +195,13 @@ class Receive(Thread):
                             username = self.get_username(line[1])
                             message = self.get_message(line)
                             message = message[:-1]
-                            tags = self.get_tags(line[0])
                             messages_amount += 1
                             chat_time = self.get_time()
                             self.last_message = str(messages_amount) + "*.*" + username + "*.*" + message
                             self.chat_print(username, message, chat_time)
                             self.save(chat_time + " " + username + ": " + message)
+                            if self.settings['OBS']:
+                                self.obs_data(chat_time[:-3] + "*.*" + username + ":*.*" + message)
             except socket.error:
                 print(self.colours["LIGHT_GREEN"] + "[chat.py] " + self.colours["END"] + self.colours["RED"] + "Socket timeout" + self.colours["END"])
         return

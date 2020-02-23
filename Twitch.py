@@ -48,7 +48,7 @@ def obs_data(voting_, vote_forward_, vote_left_, vote_right_, vote_backwards_):
     else:
         voting_str = "false"
     data = "var voting = " + voting_str + ";\nvar voting_left = " + str(vote_left_) + ";\nvar voting_right = " + str(vote_right_) + ";\nvar voting_forward = " + str(vote_forward_) + ";\nvar voting_backwards = " + str(vote_backwards_) + ";"
-    obs_location = "OBS/data.js"
+    obs_location = "OBS/stream_data.js"
     with open(obs_location, 'w') as filetowrite:
         filetowrite.write(data)
 

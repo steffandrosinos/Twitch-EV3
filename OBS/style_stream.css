@@ -23,10 +23,10 @@ body {
   left: 0px;
   height: 200px;
   width: 200px;
-  border-top: solid black 4px;
-  border-left: solid black 6px;
-  border-right: solid black 4px;
-  border-bottom: solid black 14px;
+  border-top: solid rgba(5, 5, 5, 0.9) 4px;
+  border-left: solid rgba(5, 5, 5, 0.9) 6px;
+  border-right: solid rgba(5, 5, 5, 0.9) 4px;
+  border-bottom: solid rgba(5, 5, 5, 0.9) 14px;
 }
 #grid_row {
   position: relative;
@@ -39,7 +39,7 @@ body {
   background-color: #fff;
   height: 100%;
   width: 16.67%;
-  border: solid black 2px;
+  border: solid rgba(5, 5, 5, 0.9) 2px;
   margin: 0px 0px 0px -2px;
 }
 
