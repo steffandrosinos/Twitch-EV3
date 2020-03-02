@@ -62,7 +62,6 @@ public class Robot {
 				move(direction);
 			}
 		}
-
 	}
 
 	public void move(String direction) {
@@ -133,7 +132,6 @@ public class Robot {
 
 		updateBearing(deg);
 		this.gyroSensor.reset();
-
 	}
 
 	public void tinyRotate(int x) {
