@@ -1,4 +1,4 @@
-import socket, re, time, datetime, sys, os
+import socket, re, datetime, os
 from random import *
 from threading import Thread
 
