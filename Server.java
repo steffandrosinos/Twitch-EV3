@@ -16,7 +16,7 @@ public class Server {
 	public int move_right = 0;
 	public int move_backwards = 0;
 	
-	public int PORT = 7766;
+	public int PORT;
 	public ServerSocket server;
 	public Socket client;
 	public DataOutputStream dOut;
