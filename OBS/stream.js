@@ -1,10 +1,16 @@
 function updateData() {
-  $("#data_script").remove();
-  var script = document.createElement('script');
-  script.onload = function () {};
-  script.src = "stream_data.js";
-  script.id = "data_script";
-  document.head.appendChild(script);
+  $("#stream_data_script").remove();
+  $("#robot_data_script").remove();
+  var stream_script = document.createElement('script');
+  stream_script.onload = function () {};
+  stream_script.src = "stream_data.js";
+  stream_script.id = "stream_data_script";
+  document.head.appendChild(stream_script);
+  var robot_script = document.createElement('script');
+  robot_script.onload = function () {};
+  robot_script.src = "robot_data.js";
+  robot_script.id = "robot_data_script";
+  document.head.appendChild(robot_script);
 }
 function addData(chart, label, data) {
   chart.data.labels.push(label);

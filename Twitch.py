@@ -2,6 +2,7 @@ import time
 import socket
 import chat
 import timer
+import game
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 def cprint(message):
@@ -48,8 +49,7 @@ def obs_data(voting_, vote_forward_, vote_left_, vote_right_, vote_backwards_):
     else:
         voting_str = "false"
     data = "var voting = " + voting_str + ";\nvar voting_left = " + str(vote_left_) + ";\nvar voting_right = " + str(vote_right_) + ";\nvar voting_forward = " + str(vote_forward_) + ";\nvar voting_backwards = " + str(vote_backwards_) + ";"
-    obs_location = "OBS/stream_data.js"
-    with open(obs_location, 'w') as filetowrite:
+    with open("OBS/stream_data.js", 'w') as filetowrite:
         filetowrite.write(data)
 
 # PROGRAM START
@@ -104,10 +104,12 @@ else: cprint("Local connection disabled")
 timer = timer.Timer()
 receive_chat = chat.Receive(settings)
 send_chat = chat.Send(settings)
+robot_game = game.Game(settings)
 
 # Start threads
 timer.start()
 receive_chat.start()
+robot_game.start()
 
 time.sleep(0.5)
 if settings['CHANNEL'] == "zxqw":
