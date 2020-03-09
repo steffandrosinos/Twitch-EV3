@@ -50,3 +50,12 @@ body {
   width: 325px;
   height: 325px;
 }
+
+#robot {
+  position: relative;
+  background-image: url("robot.png");
+  background-size: contain;
+  height: 27px;
+  width: 30px;
+  transition: ease 1s;
+}

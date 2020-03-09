@@ -1,4 +1,4 @@
-import socket, re, datetime, os, time
+import socket, time
 from threading import Thread
 
 #Class that deals with Twitch chat input
@@ -14,6 +14,9 @@ class Game(Thread):
 
         # Load settings
         self.settings = settings
+
+        # Reset last session
+        self.save()
 
     def connect(self):
         # connect to robot
@@ -49,7 +52,7 @@ class Game(Thread):
     def run(self):
         #conn = self.connect()
         while True:
-            pos_x, pos_y = self.openfile()
+            pos_y, pos_x = self.openfile()
             if (self.robot_pos_x != pos_x or self.robot_pos_y != pos_y):
                 self.robot_pos_x = pos_x
                 self.robot_pos_y = pos_y

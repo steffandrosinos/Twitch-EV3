@@ -46,7 +46,6 @@ function handleNoVotes() {
 
 }
 function updateChart() {
-  updateData();
   var changed = false;
   if (old_voting_left != voting_left) {
     changed = true;
@@ -71,6 +70,10 @@ function updateChart() {
     old_voting_forward = voting_forward;
     old_voting_backwards = voting_backwards;
   }
+}
+function updateRobotPos() {
+  $("#robot").css("top", (17 + (robot_pos_y * 16))*-1 +"%");
+  $("#robot").css("left", 3 + (robot_pos_x * 16) +"%");
 }
 
 var old_voting_left = 0;
@@ -116,6 +119,8 @@ $(function() {
 
   setInterval(function() {
     handleNoVotes();
+    updateData();
     updateChart();
+    updateRobotPos();
   }, 500);
 });
