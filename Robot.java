@@ -70,19 +70,9 @@ public class Robot {
 		System.out.println("Direction: " + direction);
 		if(compass.checkMove(direction)) {
 			//Move is possible
-			if(direction.equals("Forward")) {
-				moveForward();
-				compass.compassUpdate(direction);
-			} else if(direction.equals("Left")) {
-				moveLeft();
-				compass.compassUpdate(direction);
-			} else if(direction.equals("Right")) {
-				moveRight();
-				compass.compassUpdate(direction);
-			} else if(direction.equals("Backwards")) {
-				moveBackwards();
-				compass.compassUpdate(direction);
-			}
+			Rotate(compass.setDirection(direction));
+			moveForward();
+			compass.compassUpdate(direction);
 		}
 		this.moving = false;
 	}
@@ -91,19 +81,8 @@ public class Robot {
 		this.Pilot.travel(21.2);
 	}
 
-	public void moveLeft() {
-		this.Pilot.rotate(-90);
-		moveForward();
-	}
-
-	public void moveRight() {
-		this.Pilot.rotate(90);
-		moveForward();
-	}
-
-	public void moveBackwards() {
-		this.Pilot.rotate(180);
-		moveForward();
+	public void Rotate(int deg) {
+		this.Pilot.rotate(deg);
 	}
 
 	public double getGyroSample() {

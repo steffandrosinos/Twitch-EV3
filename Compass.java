@@ -53,13 +53,13 @@ public class Compass {
 
 	//function that returns degrees given direction to move, relative degree move
 	public int getDirectionAsDeg(String dir) {
-		if(dir.equals("Forward")) {
+		if(dir.equals("North")) {
 			return 0;
-	    } else if(dir.equals("Right")) {
+		} else if(dir.equals("East")) {
 	    	return 90;
-	    } else if(dir.equals("Left")) {
+	    } else if(dir.equals("South")) {
 	    	return -90;
-	    } else if(dir.equals("Backwards")) {
+	    } else if(dir.equals("West")) {
 	    	return 180;
 	    } else {
 	    	return -1;
@@ -125,6 +125,16 @@ public class Compass {
 		if(bearing == 360) {
 			bearing = 0;
 		}
+	}
+
+	public int setDirection(String dir) {
+		int bearring_after = getDirectionAsDeg(dir);
+		int current_bearing = this.bearing;
+		int deg = bearring_after - current_bearing;
+		if(deg > 180) {
+			deg = deg - 360;
+		}
+		return deg;
 	}
 
   public void compassUpdate(String dir) {

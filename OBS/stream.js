@@ -28,13 +28,13 @@ function removeData(chart) {
 }
 function handleNoVotes() {
   var noVotes = false;
-  if (voting_left > 0) {
+  if (voting_west > 0) {
     noVotes = true;
-  } else if (voting_right > 0) {
+  } else if (voting_east > 0) {
     noVotes = true;
-  } else if (voting_forward > 0) {
+  } else if (voting_north > 0) {
     noVotes = true;
-  } else if (voting_backwards > 0) {
+  } else if (voting_south > 0) {
     noVotes = true;
   }
 
@@ -47,13 +47,13 @@ function handleNoVotes() {
 }
 function updateChart() {
   var changed = false;
-  if (old_voting_left != voting_left) {
+  if (old_voting_north != voting_north) {
     changed = true;
-  } else if (old_voting_right != voting_right) {
+  } else if (old_voting_east != voting_east) {
     changed = true;
-  } else if (old_voting_forward != voting_forward) {
+  } else if (old_voting_south != voting_south) {
     changed = true;
-  } else if (old_voting_backwards != voting_backwards) {
+  } else if (old_voting_west != voting_west) {
     changed = true;
   }
   if (changed == true) {
@@ -61,25 +61,51 @@ function updateChart() {
     removeData(PieChart);
     removeData(PieChart);
     removeData(PieChart);
-    addData(PieChart, "Left", voting_left);
-    addData(PieChart, "Right", voting_right);
-    addData(PieChart, "Forward", voting_forward);
-    addData(PieChart, "Backwards", voting_backwards);
-    old_voting_left = voting_left;
-    old_voting_right = voting_right;
-    old_voting_forward = voting_forward;
-    old_voting_backwards = voting_backwards;
+    addData(PieChart, "North", voting_north);
+    addData(PieChart, "East", voting_east);
+    addData(PieChart, "South", voting_south);
+    addData(PieChart, "West", voting_west);
+    old_voting_north = voting_north;
+    old_voting_east = voting_east;
+    old_voting_south = voting_south;
+    old_voting_west = voting_west;
   }
 }
 function updateRobotPos() {
   $("#robot").css("top", (17 + (robot_pos_y * 16))*-1 +"%");
   $("#robot").css("left", 3 + (robot_pos_x * 16) +"%");
 }
+function paintBay() {
+  var html = "<div id='grids'>"
+  for (var i=6; i>0; i--) {
+    html += "<div id='grid_row'>"
+    for (var q=0; q<6; q++) {
+      var id = ((i-1)*6)+(q+1);
+      html += "<div class='row' id='rowid_" + id + "'></div>"
+    }
+    html += "</div>"
+  }
+  html += "</div>"
+  $("#robot_map").append(html);
+  $("#robot_map").append("<div id='robot'></div>");
 
-var old_voting_left = 0;
-var old_voting_right = 0;
-var old_voting_forward = 0;
-var old_voting_backwards = 0;
+  $("#rowid_8").css("background-color", "#111");
+  $("#rowid_3").css("background-color", "#111");
+  $("#rowid_10").css("background-color", "#111");
+  $("#rowid_21").css("background-color", "#111");
+  $("#rowid_26").css("background-color", "#111");
+
+  $("#rowid_9").css("background-color", "#800020");
+  $("#rowid_27").css("background-color", "#00FFFF");
+  $("#rowid_4").css("background-color", "#00FFFF");
+  $("#rowid_6").css("background-color", "#FFFF00");
+  $("#rowid_36").css("background-color", "#00FF00");
+}
+
+var old_voting_north = 0;
+var old_voting_east = 0;
+var old_voting_south = 0;
+var old_voting_west = 0;
 var PieChart;
 
 updateData();
@@ -90,7 +116,7 @@ $(function() {
 
   var ctx = $('#voting_pie');
   var data = {
-    labels: ['Left','Right','Forward','Backwards'],
+    labels: ['North', 'East', 'South', 'West'],
     datasets: [{
       data: voting_data,
       backgroundColor: ["#FF0000", "#00FF00","#0000FF","#FFFF00"],
@@ -116,6 +142,8 @@ $(function() {
       }
     }
   });
+
+  paintBay();
 
   setInterval(function() {
     handleNoVotes();

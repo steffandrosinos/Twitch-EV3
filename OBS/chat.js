@@ -26,14 +26,14 @@ function updateChat() {
     var html = "<div id='message'><div id='center'>" + time + " " + "<div class='" + username_ + "'>" + username + "</div> " + message + "</div><div id='end'></div></div>"
     $("#chat").append(html);
     $("." + username_).css("display", "inline-block");
-    if(username_ != "zxqw" && username_ != "zxqwbot") {
+    if(username_ != "zxqwbot") {
       var user_colour = getUserColour(username_);
       $("." + username_).css("color", user_colour);
     }
   }
 }
 
-var users = {"zxqw": "#ff0000"};
+var users = {};
 
 updateData();
 

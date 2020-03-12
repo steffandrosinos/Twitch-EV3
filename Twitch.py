@@ -16,39 +16,39 @@ def cprint(message):
 def getWinningVote():
     max = -1
     vote = ""
-    votes = [vote_forward, vote_left, vote_right, vote_backwards]
+    votes = [vote_north, vote_west, vote_east, vote_south]
     for i in range(4):
         if votes[i] >= max:
             max = votes[i]
             if i == 0:
-                vote = "Forward"
+                vote = "North"
             if i == 1:
-                vote = "Left"
+                vote = "West"
             if i == 2:
-                vote = "Right"
+                vote = "East"
             if i == 3:
-                vote = "Backwards"
+                vote = "South"
     if max == 0:
         vote = "none"
     return vote, max
 
 def parse_commands(username, message):
     if message == "!help":
-        send_mess = "This is a chat controlled robot, you can type the commands !forward, !left, !right or !backwards to vote. The robot chooses a move every 30 seconds. The move with the most votes is what the robot chooses to do."
+        send_mess = "This is a chat controlled robot, you can type the commands !north, !west, !east or !south to vote. The robot chooses a move every 30 seconds. The move with the most votes is what the robot chooses to do."
         send_chat.send(send_mess)
     if message == "!about":
         send_mess = "I'm a computer science student at the University of Liverpool and this is my final year project, a Twitch chat controlled EV3 Robot."
         send_chat.send(send_mess)
     if message == "!commands":
-        send_mess = "!forward, !left, !right, !backwards, !help, !about, !commands"
+        send_mess = "!north, !west, !east, !south, !help, !about, !commands"
         send_chat.send(send_mess)
 
-def obs_data(voting_, vote_forward_, vote_left_, vote_right_, vote_backwards_):
+def obs_data(voting_, vote_north_, vote_west_, vote_east_, vote_south_):
     if voting_:
         voting_str = "true"
     else:
         voting_str = "false"
-    data = "var voting = " + voting_str + ";\nvar voting_left = " + str(vote_left_) + ";\nvar voting_right = " + str(vote_right_) + ";\nvar voting_forward = " + str(vote_forward_) + ";\nvar voting_backwards = " + str(vote_backwards_) + ";"
+    data = "var voting = " + voting_str + ";\nvar voting_west = " + str(vote_west_) + ";\nvar voting_east = " + str(vote_east_) + ";\nvar voting_north = " + str(vote_north_) + ";\nvar voting_south = " + str(vote_south_) + ";"
     with open("OBS/stream_data.js", 'w') as filetowrite:
         filetowrite.write(data)
 
@@ -117,12 +117,12 @@ if settings['CHANNEL'] == "zxqw":
 
 last_message = ""
 voting = False
-vote_forward = 0
-vote_left = 0
-vote_right = 0
-vote_backwards = 0
+vote_north = 0
+vote_east = 0
+vote_west = 0
+vote_south = 0
 if settings['OBS']:
-    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+    obs_data(voting, vote_north, vote_west, vote_east, vote_south)
 while True:
     if voting:
         if timer.seconds >= settings['VOTING_TIME']:
@@ -130,21 +130,21 @@ while True:
             timer.voting = False
             timer.seconds = 0
             winning_vote, winning_amount = getWinningVote()
-            total = vote_forward + vote_left + vote_right + vote_backwards
+            total = vote_north + vote_west + vote_east + vote_south
             if winning_vote != "none":
                 send_chat.send("Winning vote: " + winning_vote + " - " + str(winning_amount) + "/" + str(total))
                 if settings['LOCAL'] == True:
                     robot_conn.send(bytes(winning_vote + '\n', 'UTF-8'))
             else:
                 send_chat.send("No votes recorded - resetting")
-            vote_forward = 0
-            vote_left = 0
-            vote_right = 0
-            vote_backwards = 0
+            vote_north = 0
+            vote_west = 0
+            vote_east = 0
+            vote_south = 0
             voting = True
             timer.voting = True
             if settings['OBS']:
-                obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+                obs_data(voting, vote_north, vote_west, vote_east, vote_south)
     if last_message != receive_chat.last_message:
         last_message = receive_chat.last_message
         message_split = last_message.split("*.*")
@@ -157,22 +157,22 @@ while True:
             message += split
 
         if username == "zxqw":
-            if message == "!sforward":
-                send_chat.send("Forced Forward")
+            if message == "!fnorth":
+                send_chat.send("Forced North")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("Forward" + '\n', 'UTF-8'))
-            elif message == "!sleft":
-                send_chat.send("Forced Left")
+                    robot_conn.send(bytes("North" + '\n', 'UTF-8'))
+            elif message == "!fwest":
+                send_chat.send("Forced West")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("Left" + '\n', 'UTF-8'))
-            elif message == "!sright":
-                send_chat.send("Forced right")
+                    robot_conn.send(bytes("West" + '\n', 'UTF-8'))
+            elif message == "!feast":
+                send_chat.send("Forced East")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("Right" + '\n', 'UTF-8'))
-            elif message == "!sbackwards":
-                send_chat.send("Forced backwards")
+                    robot_conn.send(bytes("East" + '\n', 'UTF-8'))
+            elif message == "!fsouth":
+                send_chat.send("Forced South")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("Backwards" + '\n', 'UTF-8'))
+                    robot_conn.send(bytes("South" + '\n', 'UTF-8'))
 
             if message == "!start":
                 send_chat.send("Accepting Votes, getting results every " + str(settings['VOTING_TIME']) + " seconds")
@@ -181,12 +181,12 @@ while True:
             elif message == "!stop":
                 send_chat.send("Not accepting votes")
                 voting = False
-                vote_forward = 0
-                vote_left = 0
-                vote_right = 0
-                vote_backwards = 0
+                vote_north = 0
+                vote_west = 0
+                vote_east = 0
+                vote_south = 0
                 if settings['OBS']:
-                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+                    obs_data(voting, vote_north, vote_west, vote_east, vote_south)
                 timer.voting = False
                 timer.seconds = 0
 
@@ -194,21 +194,21 @@ while True:
         parse_commands(username, message)
 
         if voting:
-            if message == "!forward":
-                vote_forward += 1
+            if message == "!north":
+                vote_north += 1
                 if settings['OBS']:
-                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
-            if message == "!left":
-                vote_left += 1
+                    obs_data(voting, vote_north, vote_west, vote_east, vote_south)
+            if message == "!west":
+                vote_west += 1
                 if settings['OBS']:
-                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
-            if message == "!right":
-                vote_right += 1
+                    obs_data(voting, vote_north, vote_west, vote_east, vote_south)
+            if message == "!east":
+                vote_east += 1
                 if settings['OBS']:
-                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
-            if message == "!backwards":
-                vote_backwards += 1
+                    obs_data(voting, vote_north, vote_west, vote_east, vote_south)
+            if message == "!south":
+                vote_south += 1
                 if settings['OBS']:
-                    obs_data(voting, vote_forward, vote_left, vote_right, vote_backwards)
+                    obs_data(voting, vote_north, vote_west, vote_east, vote_south)
 
     time.sleep(0.01)

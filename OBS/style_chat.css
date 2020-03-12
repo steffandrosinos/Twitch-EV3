@@ -41,12 +41,6 @@ body {
   background-color: rgba(5, 5, 5, 0.9);
   padding: 0px 10px 0px 10px;
 }
-.zxqw {
-  background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 .zxqwbot {
   background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
   background-size: 120% 100%;
