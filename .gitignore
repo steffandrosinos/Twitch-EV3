@@ -1,6 +1,8 @@
 __pycache__
 Logs
 a2
+backups
+docs
 OBS/chart
 OBS/chat_data.js
 OBS/stream_data.js
