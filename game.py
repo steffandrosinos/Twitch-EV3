@@ -15,9 +15,6 @@ class Game(Thread):
         # Load settings
         self.settings = settings
 
-        # Reset last session
-        self.save()
-
     def connect(self):
         # connect to robot
         port = 7767
@@ -25,10 +22,12 @@ class Game(Thread):
         self.cprint("Waiting for Local connection")
         while True:
             try:
+                self.settings['LOCAL_IP'] = "192.168.0.17"
                 robot_conn.connect((self.settings['LOCAL_IP'], port))
                 break
             except: pass
         self.cprint("Connected")
+        return robot_conn
 
     def cprint(self, message):
         if self.settings['COLOUR'] == True:
@@ -50,13 +49,19 @@ class Game(Thread):
 
     # Thread
     def run(self):
-        #conn = self.connect()
+        conn = self.connect()
+        data = ""
         while True:
-            pos_y, pos_x = self.openfile()
-            if (self.robot_pos_x != pos_x or self.robot_pos_y != pos_y):
-                self.robot_pos_x = pos_x
-                self.robot_pos_y = pos_y
-                self.cprint("Robot x: " + str(self.robot_pos_x) + " y: " + str(self.robot_pos_y))
-                self.save()
-            time.sleep(0.1)
+            try:
+                str = ""
+                while True:
+                    data = conn.recv(1024).decode("utf-8")
+                    str += data
+                    if len(str) == 3: break
+                self.robot_pos_y = str.split(",")[0]
+                self.robot_pos_x = str.split(",")[1]
+            except socket.error:
+                self.cprint(self.colours["RED"] + "Socket timeout" + self.colours["END"])
+                break
+            self.cprint("Robot X: " + self.robot_pos_x + " Robot Y: " + self.robot_pos_y)
         return

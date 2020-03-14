@@ -9,13 +9,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-	
+
 	//Voting
 	public int move_forward = 0;
 	public int move_left = 0;
 	public int move_right = 0;
 	public int move_backwards = 0;
-	
+
 	public int PORT;
 	public ServerSocket server;
 	public Socket client;
@@ -25,7 +25,7 @@ public class Server {
 	public Server(int PORT) {
 		this.PORT = PORT;
 	}
-	
+
 	public void connect() {
 		while(true) {
 			try {
@@ -40,7 +40,7 @@ public class Server {
 			//Delay.msDelay(100);
 		}
 	}
-	
+
 	public void close() {
 		try {
 			server.close();
@@ -49,12 +49,12 @@ public class Server {
 			dIn.close();
 		} catch(IOException e) { /* servers already closed */ }
 	}
-	
+
 	public void reset() {
 		close();
 		connect();
 	}
-	
+
 	// Function that takes a byte stream and returns "string" given 's''t''r''i''n''g''\n'
 	public String getInput() {
 		String s = "";
@@ -67,5 +67,11 @@ public class Server {
 		}
 		return s;
 	}
-	
+
+	public void send(String message) {
+		try { 
+			dOut.writeBytes(message);
+		} catch(IOException e) {}
+	}
+
 }

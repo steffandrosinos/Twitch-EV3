@@ -28,7 +28,6 @@ public class Game {
      Map[4][1] = 1;
      Map[3][3] = 1;
      // Colours
-     Map[3][1] = 2;
      Map[5][5] = 2;
      Map[2][0] = 3;
      Map[4][0] = 4;
@@ -36,10 +35,15 @@ public class Game {
 
      //Create Game servers
      GameServer = new Server(7767); //Check if this works as non-thread
+     GameServer.connect();
   }
 
   public int getType(int[] position) {
     return Map[position[0]][position[1]];
+  }
+
+  public void sendPosition(int y, int x) {
+	  GameServer.send("" + y + "," + x);
   }
 
 }
