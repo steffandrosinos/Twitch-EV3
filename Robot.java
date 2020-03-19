@@ -15,6 +15,7 @@ public class Robot {
 
 	public Server server;
 	public Compass compass;
+	public Game game;
 
 	// Variables
 	public int PORT;
@@ -49,9 +50,11 @@ public class Robot {
 		this.spr = this.gyroSensor.getAngleMode();
 		this.sample = new float[this.spr.sampleSize()];
 
-		this.compass = new Compass(starting_x, starting_y, starting_bearing);
 		this.server = new Server(this.PORT);
 		this.server.connect();
+		
+		this.game = new Game();
+		this.compass = new Compass(this.game, 0, 0, starting_bearing);
 	}
 
 	public void start() {
@@ -59,20 +62,33 @@ public class Robot {
 		while(true) {
 			if(!this.moving) {
 				String direction = server.getInput();
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
 				System.out.println("dir: " + direction);
 				move(direction);
 			}
+			Delay.msDelay(250);
 		}
 	}
 
 	public void move(String direction) {
 		this.moving = true;
-		System.out.println("Direction: " + direction);
 		if(compass.checkMove(direction)) {
 			//Move is possible
-			Rotate(compass.setDirection(direction));
+			int turn_deg = compass.getTurnDeg(direction);
+			System.out.println("Turn: " + turn_deg);
+			Rotate(turn_deg);
 			moveForward();
 			compass.compassUpdate(direction);
+		} else {
+			System.out.println("Not Possible");
 		}
 		this.moving = false;
 	}

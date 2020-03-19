@@ -98,18 +98,18 @@ if settings['LOCAL'] == True:
             break
         except: pass
     cprint("Connected")
+    robot_game = game.Game(settings)
+    robot_game.start()
 else: cprint("Local connection disabled")
 
 # Create objects
 timer = timer.Timer()
 receive_chat = chat.Receive(settings)
 send_chat = chat.Send(settings)
-robot_game = game.Game(settings)
 
 # Start threads
 timer.start()
 receive_chat.start()
-robot_game.start()
 
 time.sleep(0.5)
 if settings['CHANNEL'] == "zxqw":

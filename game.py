@@ -22,7 +22,6 @@ class Game(Thread):
         self.cprint("Waiting for Local connection")
         while True:
             try:
-                self.settings['LOCAL_IP'] = "192.168.0.17"
                 robot_conn.connect((self.settings['LOCAL_IP'], port))
                 break
             except: pass
