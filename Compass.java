@@ -69,7 +69,7 @@ public class Compass {
 		int [] new_position = movePosition(current_pos, bearing_after);
 		boolean possible = false;
 		if(new_position[0] >= 0 && new_position[0] < 6 && new_position[1] >= 0 && new_position[1] < 6) {
-			if(game.Map[new_position[0]][new_position[1]] != 1) {
+			if(game.getType(new_position) != 1) {
 				possible = true;
 			}
 		}

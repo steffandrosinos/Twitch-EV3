@@ -9,7 +9,6 @@ import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
 import lejos.robotics.chassis.WheeledChassis;
 import lejos.robotics.navigation.MovePilot;
-import lejos.utility.Delay;
 
 public class Robot {
 
@@ -62,19 +61,10 @@ public class Robot {
 		while(true) {
 			if(!this.moving) {
 				String direction = server.getInput();
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("");
-				System.out.println("dir: " + direction);
+				for(int i=0; i<9; i++) System.out.println("");
+				System.out.println("Dir: " + direction);
 				move(direction);
 			}
-			Delay.msDelay(250);
 		}
 	}
 
@@ -87,6 +77,9 @@ public class Robot {
 			Rotate(turn_deg);
 			moveForward();
 			compass.compassUpdate(direction);
+			//Send coords to python
+			int[] position = compass.getPosition();
+			game.sendPosition(position[0], position[1]);
 		} else {
 			System.out.println("Not Possible");
 		}
