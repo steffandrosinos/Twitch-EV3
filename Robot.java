@@ -15,6 +15,7 @@ public class Robot {
 	public Server server;
 	public Compass compass;
 	public Game game;
+	public Sirens siren;
 
 	// Variables
 	public int PORT;
@@ -31,7 +32,6 @@ public class Robot {
 	private float [] sample;
 
 	public int FORWARD_SPEED = 25;
-	public double ROTATE_FIX = 1.01;
 
 	public Robot(int PORT, int starting_x, int starting_y, int starting_bearing) {
 		this.PORT = PORT;
@@ -48,22 +48,41 @@ public class Robot {
 		this.gyroSensor = new EV3GyroSensor(this.myEV3.getPort("S4"));
 		this.spr = this.gyroSensor.getAngleMode();
 		this.sample = new float[this.spr.sampleSize()];
-
-		this.server = new Server(this.PORT);
-		this.server.connect();
 		
 		this.game = new Game();
 		this.compass = new Compass(this.game, 0, 0, starting_bearing);
+		this.siren = new Sirens(myEV3);
 	}
 
 	public void start() {
+		this.siren.start();
 		System.out.println("Started");
 		while(true) {
 			if(!this.moving) {
-				String direction = server.getInput();
+				String input = game.getInput();
 				for(int i=0; i<9; i++) System.out.println("");
-				System.out.println("Dir: " + direction);
-				move(direction);
+				if(input.equals("North") || input.equals("East") || input.equals("South") || input.equals("West")) {
+					System.out.println("Dir: " + input);
+					move(input);
+				} else {
+					if(input.equals("Spin")) {
+						siren.setBoolean(true);
+						this.Pilot.setAngularAcceleration(90);
+						this.Pilot.setAngularSpeed(90);
+						Rotate(720);
+						siren.setBoolean(false);
+						this.Pilot.setAngularAcceleration(30);
+						this.Pilot.setAngularSpeed(20);
+					} else if(input.equals("Cyan")) {
+						
+					} else if(input.equals("Yellow")) {
+						
+					} else if(input.equals("Burgandy")) {
+						
+					} else if(input.equals("Green")) {
+						
+					}
+				}
 			}
 		}
 	}

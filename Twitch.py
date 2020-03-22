@@ -84,23 +84,8 @@ settings['COLOUR'] = not args.no_colour
 settings['VOTING_TIME'] = args.voting_time
 settings['OBS'] = args.obs
 
-if settings['LOCAL'] == True:
-    cprint("Local connection enabled")
-    cprint("Local IP: " + settings['LOCAL_IP'])
-
-    # connect to robot
-    port = 7766
-    robot_conn = socket.socket()
-    cprint("Waiting for Local connection")
-    while True:
-        try:
-            robot_conn.connect((settings['LOCAL_IP'], port))
-            break
-        except: pass
-    cprint("Connected")
-    robot_game = game.Game(settings)
-    robot_game.start()
-else: cprint("Local connection disabled")
+robot = game.Game(settings)
+robot.start()
 
 # Create objects
 timer = timer.Timer()
@@ -134,7 +119,7 @@ while True:
             if winning_vote != "none":
                 send_chat.send("Winning vote: " + winning_vote + " - " + str(winning_amount) + "/" + str(total))
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes(winning_vote + '\n', 'UTF-8'))
+                    robot.send(winning_vote)
             else:
                 send_chat.send("No votes recorded - resetting")
             vote_north = 0
@@ -160,19 +145,19 @@ while True:
             if message == "!fnorth":
                 send_chat.send("Forced North")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("North" + '\n', 'UTF-8'))
+                    robot.send("North")
             elif message == "!fwest":
                 send_chat.send("Forced West")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("West" + '\n', 'UTF-8'))
+                    robot.send("West")
             elif message == "!feast":
                 send_chat.send("Forced East")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("East" + '\n', 'UTF-8'))
+                    robot.send("East")
             elif message == "!fsouth":
                 send_chat.send("Forced South")
                 if settings['LOCAL'] == True:
-                    robot_conn.send(bytes("South" + '\n', 'UTF-8'))
+                    robot.send("South")
 
             if message == "!start":
                 send_chat.send("Accepting Votes, getting results every " + str(settings['VOTING_TIME']) + " seconds")
