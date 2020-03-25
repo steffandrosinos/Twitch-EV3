@@ -60,7 +60,6 @@ class Game(Thread):
 
     # Thread
     def run(self):
-
         if self.settings['LOCAL'] == True:
             self.cprint("Local connection enabled")
             self.cprint("Local IP: " + self.settings['LOCAL_IP'])
@@ -83,6 +82,7 @@ class Game(Thread):
                         self.send("Spin")
                     if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 5:
                         self.send("Spin")
+                    self.save()
                 except socket.error:
                     self.cprint(self.colours["RED"] + "Socket timeout" + self.colours["END"])
                     break
