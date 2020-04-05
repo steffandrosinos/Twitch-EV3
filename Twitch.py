@@ -1,5 +1,4 @@
 import time
-import socket
 import chat
 import timer
 import game

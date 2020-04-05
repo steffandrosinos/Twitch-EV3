@@ -1,7 +1,6 @@
 from threading import Thread
 import time
 
-
 class Timer(Thread):
     voting = False
     seconds = 0

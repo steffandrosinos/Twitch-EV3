@@ -57,3 +57,11 @@ body {
   width: 30px;
   transition: ease 1s;
 }
+.dot {
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  background-color: #f00;
+  border-radius: 50%;
+  display: inline-block;
+}

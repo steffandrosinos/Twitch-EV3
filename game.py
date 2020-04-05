@@ -1,4 +1,5 @@
 import socket
+import random
 from threading import Thread
 
 #Class that deals with Twitch chat input
@@ -24,6 +25,19 @@ class Game(Thread):
     Map[4][2] = 4 # Cyan
     Map[0][5] = 3 # Yellow
     Map[5][5] = 2 # Green
+
+    # Dot game
+    # random location for dots (there are 3) Map 6 = dot
+    dots_amount = 0
+    dots_location = [[0 for i in range(3)] for j in range(3)]
+    while dots_amount<3:
+        randy = random.randint(0,5)
+        randx = random.randint(0,5)
+        if Map[randy][randx] == 0 and Map[randy][randx] != 6 and (randy != 0 and randx != 0):
+            Map[randy][randx] = 6
+            dots_location[dots_amount][0] = randy
+            dots_location[dots_amount][1] = randx
+            dots_amount += 1
 
     def __init__(self, settings):
         super(Game, self).__init__()
@@ -54,13 +68,19 @@ class Game(Thread):
             print("[game.py] " + message)
 
     def save(self):
-        data = "var robot_pos_x = " + str(self.robot_pos_x) + ";\nvar robot_pos_y = " + str(self.robot_pos_y) + ";"
+        data = "var robot_pos_x = " + str(self.robot_pos_x) + ";\n"
+        data += "var robot_pos_y = " + str(self.robot_pos_y) + ";\n"
+        data += "var dots_location = [["
+        data += str(self.dots_location[0][0]) + ", " + str(self.dots_location[0][1]) + "],["
+        data += str(self.dots_location[1][0]) + ", " + str(self.dots_location[1][1]) + "],["
+        data += str(self.dots_location[2][0]) + ", " + str(self.dots_location[2][1]) + "]];"
         with open("OBS/robot_data.js", 'w') as filetowrite:
             filetowrite.write(data)
 
     # Thread
     def run(self):
-        if self.settings['LOCAL'] == True:
+        self.save()
+        if self.settings['LOCAL'] and self.settings['OBS']:
             self.cprint("Local connection enabled")
             self.cprint("Local IP: " + self.settings['LOCAL_IP'])
             self.conn = self.connect()

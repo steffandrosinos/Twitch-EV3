@@ -88,6 +88,11 @@ function paintBay() {
   html += "</div>"
   $("#robot_map").append(html);
   $("#robot_map").append("<div id='robot'></div>");
+  for (var i=1; i<=dots_location.length; i++) {
+    $("#robot_map").append("<div class='dot' id='dot" + i + "'></div>");
+    $("#dot"+i).css("top", (7 + ((5-dots_location[i-1][0]) * 15.7)) +"%");
+    $("#dot"+i).css("left", 7 + (dots_location[i-1][1] * 15.85) +"%");
+  }
 
   $("#rowid_8").css("background-color", "#111");
   $("#rowid_3").css("background-color", "#111");
@@ -100,6 +105,19 @@ function paintBay() {
   $("#rowid_4").css("background-color", "#00FFFF");
   $("#rowid_6").css("background-color", "#FFFF00");
   $("#rowid_36").css("background-color", "#00FF00");
+}
+function dotGame() {
+  var onDots = false;
+  var dotid = -1;
+  for (var i=0; i<dots_location.length; i++) {
+    if((robot_pos_y == dots_location[i][0]) && (robot_pos_x == dots_location[i][1])) {
+      onDots = true;
+      dotid = i+1;
+    }
+  }
+  if(onDots == true) {
+    $("#dot" + dotid).remove();
+  }
 }
 
 var old_voting_north = 0;
@@ -150,5 +168,6 @@ $(function() {
     updateData();
     updateChart();
     updateRobotPos();
+    dotGame();
   }, 500);
 });
