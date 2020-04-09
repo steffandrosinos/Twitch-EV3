@@ -75,7 +75,7 @@ function updateRobotPos() {
   $("#robot").css("top", (17 + (robot_pos_y * 16))*-1 +"%");
   $("#robot").css("left", 3 + (robot_pos_x * 16) +"%");
 }
-function paintBay() {
+function paint() {
   var html = "<div id='grids'>"
   for (var i=6; i>0; i--) {
     html += "<div id='grid_row'>"
@@ -106,29 +106,104 @@ function paintBay() {
   $("#rowid_6").css("background-color", "#FFFF00");
   $("#rowid_36").css("background-color", "#00FF00");
 }
-function dotGame() {
-  var onDots = false;
-  var dotid = -1;
-  for (var i=0; i<dots_location.length; i++) {
-    if((robot_pos_y == dots_location[i][0]) && (robot_pos_x == dots_location[i][1])) {
-      onDots = true;
-      dotid = i+1;
+function makeDots() {
+  var dots_amount = 0;
+  while(dots_amount<3) {
+    var randy = Math.floor(Math.random() * 6);
+    var randx = Math.floor(Math.random() * 6);
+    if(Map[randy][randx] == 0 && Map[randy][randx] != 6 && (randy != robot_pos_y && randx != robot_pos_x)) {
+      Map[randy][randx] = 6;
+      dots_location_new[dots_amount][0] = randy;
+      dots_location_new[dots_amount][1] = randx;
+      dots_amount++;
     }
   }
-  if(onDots == true) {
-    $("#dot" + dotid).remove();
+  dots_changed = true;
+  //Paint new dots
+  for(var i=0; i<3; i++) {
+    $("#dot"+i).remove();
+  }
+  for (var i=1; i<=dots_location_new.length; i++) {
+    $("#robot_map").append("<div class='dot' id='dot" + i + "'></div>");
+    $("#dot"+i).css("top", (7 + ((5-dots_location_new[i-1][0]) * 15.7)) +"%");
+    $("#dot"+i).css("left", 7 + (dots_location_new[i-1][1] * 15.85) +"%");
   }
 }
+function dotGame() {
+  if (robot_pos_y != last_robot_pos_y || robot_pos_x != last_robot_pos_x) {
+    var onDots = false;
+    var dotid = -1;
+    if(dots_changed == false) {
+      for (var i=0; i<dots_location.length; i++) {
+        if((robot_pos_y == dots_location[i][0]) && (robot_pos_x == dots_location[i][1])) {
+          onDots = true;
+          dotid = i+1;
+        }
+      }
+    } else {
+      for (var i=0; i<dots_location_new.length; i++) {
+        if((robot_pos_y == dots_location_new[i][0]) && (robot_pos_x == dots_location_new[i][1])) {
+          onDots = true;
+          dotid = i+1;
+        }
+      }
+    }
+    if(onDots == true) {
+      $("#dot" + dotid).remove();
+      dots_collected++;
+      $("dot_amount").html(dots_collected);
+      if(dots_collected == 3) {
+        $("body").append("<video autoplay id='video' src='confetti.mp4'></video>");
+        setTimeout(function (){
+          $("#video").remove();
+          dots_collected = 0;
+          makeDots();
+          $("dot_amount").html(dots_collected);
+        }, 10000);
+      }
+    }
+  }
+  last_robot_pos_y = robot_pos_y;
+  last_robot_pos_x = robot_pos_x;
+}
+
+var Map = [
+  [0,0,0,0,0,0],
+  [0,0,0,0,0,0],
+  [0,0,0,0,0,0],
+  [0,0,0,0,0,0],
+  [0,0,0,0,0,0],
+  [0,0,0,0,0,0]
+];
+//Blocks
+Map[1][1] = 1
+Map[0][2] = 1
+Map[1][3] = 1
+Map[3][2] = 1
+Map[4][1] = 1
+//Coloured tiles
+Map[1][2] = 5 //Burgandy
+Map[0][3] = 4 //Cyan
+Map[4][2] = 4 //Cyan
+Map[0][5] = 3 //Yellow
+Map[5][5] = 2 //Green
 
 var old_voting_north = 0;
 var old_voting_east = 0;
 var old_voting_south = 0;
 var old_voting_west = 0;
+var dots_collected = 0;
+var last_robot_pos_y = -1;
+var last_robot_pos_x = -1;
 var PieChart;
 
 updateData();
+var dots_changed = false;
+var dots_location_new;
 
 $(function() {
+
+  dots_location_new = dots_location;
 
   var voting_data = [0, 0, 0, 0]
 
@@ -161,7 +236,8 @@ $(function() {
     }
   });
 
-  paintBay();
+  updateData();
+  paint();
 
   setInterval(function() {
     handleNoVotes();
