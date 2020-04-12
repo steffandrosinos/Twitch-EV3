@@ -200,10 +200,12 @@ var PieChart;
 updateData();
 var dots_changed = false;
 var dots_location_new;
+var dots_location_startup;
 
 $(function() {
 
   dots_location_new = dots_location;
+  dots_location_startup = dots_location;
 
   var voting_data = [0, 0, 0, 0]
 
@@ -240,6 +242,17 @@ $(function() {
   paint();
 
   setInterval(function() {
+    var equal_array = true;
+    for (var x=0; x<dots_location.length; x++) {
+      for (var i=0; i<2; i++) {
+        if(dots_location[x][i] != dots_location_startup[x][i]) {
+          equal_array = false;
+        }
+      }
+    }
+    if(equal_array == false) {
+      location.reload();
+    }
     handleNoVotes();
     updateData();
     updateChart();

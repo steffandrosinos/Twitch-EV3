@@ -1,7 +1,5 @@
 package Main;
 
-import lejos.hardware.Brick;
-
 public class Game {
 
 	public Server GameServer;

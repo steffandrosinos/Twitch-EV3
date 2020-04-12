@@ -15,7 +15,7 @@ public class Robot {
 	public Server server;
 	public Compass compass;
 	public Game game;
-	public Sirens siren;
+	public LEDColour siren;
 
 	// Variables
 	public int PORT;
@@ -31,7 +31,7 @@ public class Robot {
 	public SampleProvider spr;
 	private float [] sample;
 
-	public int FORWARD_SPEED = 25;
+	public int FORWARD_SPEED = 30;
 
 	public Robot(int PORT, int starting_x, int starting_y, int starting_bearing) {
 		this.PORT = PORT;
@@ -40,10 +40,10 @@ public class Robot {
 		this.rightWheel = WheeledChassis.modelWheel(Motor.D, 3.5).offset(4.5);
 		this.myChassis = new WheeledChassis( new Wheel[]{this.leftWheel, this.rightWheel}, WheeledChassis.TYPE_DIFFERENTIAL);
 		this.Pilot = new MovePilot(this.myChassis);
-		this.Pilot.setLinearAcceleration(5);
-		this.Pilot.setAngularAcceleration(30);
+		this.Pilot.setLinearAcceleration(10);
 		this.Pilot.setLinearSpeed(this.FORWARD_SPEED);
-		this.Pilot.setAngularSpeed(20);
+		this.Pilot.setAngularAcceleration(30);
+		this.Pilot.setAngularSpeed(60);
 
 		this.gyroSensor = new EV3GyroSensor(this.myEV3.getPort("S4"));
 		this.spr = this.gyroSensor.getAngleMode();
@@ -51,10 +51,11 @@ public class Robot {
 		
 		this.game = new Game();
 		this.compass = new Compass(this.game, 0, 0, starting_bearing);
-		this.siren = new Sirens(myEV3);
+		this.siren = new LEDColour(myEV3);
 	}
 
 	public void start() {
+		
 		this.siren.start();
 		System.out.println("Started");
 		while(true) {
@@ -65,26 +66,23 @@ public class Robot {
 					System.out.println("Dir: " + input);
 					move(input);
 				} else {
-					if(input.equals("Spin")) {
-						siren.setBoolean(true);
-						this.Pilot.setAngularAcceleration(90);
-						this.Pilot.setAngularSpeed(90);
-						Rotate(720);
-						siren.setBoolean(false);
-						this.Pilot.setAngularAcceleration(30);
-						this.Pilot.setAngularSpeed(20);
-					} else if(input.equals("Cyan")) {
-						
-					} else if(input.equals("Yellow")) {
-						
+					if(input.equals("Green")) {
+						siren.setBoolean(0, true);
 					} else if(input.equals("Burgandy")) {
-						
-					} else if(input.equals("Green")) {
-						
+						siren.setBoolean(1, true);
+					} else if(input.equals("Orange")) {
+						siren.setBoolean(2, true);
+					} else if(input.equals("Spin")) {
+						this.Pilot.setAngularAcceleration(30);
+						this.Pilot.setAngularSpeed(100);
+						Rotate(805);
+						this.Pilot.setAngularAcceleration(30);
+						this.Pilot.setAngularSpeed(60);
 					}
 				}
 			}
 		}
+		
 	}
 
 	public void move(String direction) {

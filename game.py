@@ -23,7 +23,7 @@ class Game(Thread):
     Map[1][2] = 5 # Burgandy
     Map[0][3] = 4 # Cyan
     Map[4][2] = 4 # Cyan
-    Map[0][5] = 3 # Yellow
+    Map[0][5] = 3 # Orange
     Map[5][5] = 2 # Green
 
     # Dot game
@@ -95,12 +95,16 @@ class Game(Thread):
                     self.robot_pos_y = str.split(",")[0]
                     self.robot_pos_x = str.split(",")[1]
                     if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 2:
-                        self.send("Spin")
+                        self.cprint("Sending Green")
+                        self.send("Green")
                     if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 3:
-                        self.send("Spin")
-                    if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 4:
-                        self.send("Spin")
+                        self.cprint("Sending Orange")
+                        self.send("Orange")
                     if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 5:
+                        self.cprint("Sending Red")
+                        self.send("Burgandy")
+                    if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 4:
+                        self.cprint("Sending Spin")
                         self.send("Spin")
                     self.save()
                 except socket.error:
