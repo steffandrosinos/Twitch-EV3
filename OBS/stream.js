@@ -81,7 +81,20 @@ function paint() {
     html += "<div id='grid_row'>"
     for (var q=0; q<6; q++) {
       var id = ((i-1)*6)+(q+1);
-      html += "<div class='row' id='rowid_" + id + "'></div>"
+      if(Map[(i-1)][q] == 1) {
+        $("#rowid_" + id).css("background-color", "#111");
+        html += "<div class='row' id='rowid_" + id + "' style='background-color: rgb(17, 17, 17);'></div>"
+      } else if(Map[(i-1)][q] == 2) {
+        html += "<div class='row' id='rowid_" + id + "' style='background-color: #00FF00;'></div>"
+      } else if(Map[(i-1)][q] == 3) {
+        html += "<div class='row' id='rowid_" + id + "' style='background-color: #FFFF00;'></div>"
+      } else if(Map[(i-1)][q] == 4) {
+        html += "<div class='row' id='rowid_" + id + "' style='background-color: #00FFFF;'></div>"
+      } else if(Map[(i-1)][q] == 5) {
+        html += "<div class='row' id='rowid_" + id + "' style='background-color: #800020;'></div>"
+      } else {
+        html += "<div class='row' id='rowid_" + id + "'></div>"
+      }
     }
     html += "</div>"
   }
@@ -94,17 +107,6 @@ function paint() {
     $("#dot"+i).css("left", 7 + (dots_location[i-1][1] * 15.85) +"%");
   }
 
-  $("#rowid_8").css("background-color", "#111");
-  $("#rowid_3").css("background-color", "#111");
-  $("#rowid_10").css("background-color", "#111");
-  $("#rowid_21").css("background-color", "#111");
-  $("#rowid_26").css("background-color", "#111");
-
-  $("#rowid_9").css("background-color", "#800020");
-  $("#rowid_27").css("background-color", "#00FFFF");
-  $("#rowid_4").css("background-color", "#00FFFF");
-  $("#rowid_6").css("background-color", "#FFFF00");
-  $("#rowid_36").css("background-color", "#00FF00");
 }
 function makeDots() {
   var dots_amount = 0;
@@ -175,18 +177,51 @@ var Map = [
   [0,0,0,0,0,0],
   [0,0,0,0,0,0]
 ];
-//Blocks
+// Bay 1
 Map[1][1] = 1
 Map[0][2] = 1
 Map[1][3] = 1
 Map[3][2] = 1
 Map[4][1] = 1
-//Coloured tiles
 Map[1][2] = 5 //Burgandy
 Map[0][3] = 4 //Cyan
 Map[4][2] = 4 //Cyan
 Map[0][5] = 3 //Yellow
 Map[5][5] = 2 //Green
+
+/*
+// Bay 2
+Map[2][2] = 1
+Map[2][3] = 1
+Map[3][4] = 1
+Map[0][5] = 1
+Map[3][2] = 5 //Burgandy
+Map[5][4] = 4 //Cyan
+Map[1][5] = 4 //Cyan
+Map[2][0] = 2 //Green
+Map[5][1] = 3 //Green
+
+// Bay 3
+Map[0][1] = 1
+Map[1][2] = 1
+Map[2][1] = 1
+Map[2][3] = 1
+Map[0][5] = 5 //Burgandy
+Map[0][2] = 4 //Cyan
+Map[4][3] = 4 //Cyan
+Map[5][0] = 3 //Yellow
+Map[2][2] = 2 //Green
+// Bay 4
+Map[1][1] = 1
+Map[4][1] = 1
+Map[1][4] = 1
+Map[4][4] = 1
+Map[4][0] = 5 //Burgandy
+Map[2][3] = 4 //Cyan
+Map[2][5] = 4 //Cyan
+Map[0][5] = 3 //Yellow
+Map[5][5] = 2 //Green
+*/
 
 var old_voting_north = 0;
 var old_voting_east = 0;
