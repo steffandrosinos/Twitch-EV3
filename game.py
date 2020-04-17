@@ -20,7 +20,7 @@ class Game(Thread):
     Map[3][2] = 1
     Map[4][1] = 1
     # Coloured tiles
-    Map[1][2] = 5 # Burgandy
+    Map[1][2] = 5 # Burgundy
     Map[0][3] = 4 # Cyan
     Map[4][2] = 4 # Cyan
     Map[0][5] = 3 # Orange
@@ -102,7 +102,7 @@ class Game(Thread):
                         self.send("Orange")
                     if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 5:
                         self.cprint("Sending Red")
-                        self.send("Burgandy")
+                        self.send("Burgundy")
                     if self.Map[int(self.robot_pos_y)][int(self.robot_pos_x)] == 4:
                         self.cprint("Sending Spin")
                         self.send("Spin")
