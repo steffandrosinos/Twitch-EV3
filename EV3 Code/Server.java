@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server {
 
@@ -57,19 +58,24 @@ public class Server {
 
 	// Function that takes a byte stream and returns "string" given 's''t''r''i''n''g''\n'
 	public String getInput() {
-		String s = "";
+		ArrayList<Byte> byte_list = new ArrayList<Byte>();
 		while(true) {
 			try {
-				int c = dIn.readByte();
-				if(c != 10) s += (char) c;
+				byte in = dIn.readByte();
+				if(in != 0x0A)
+					byte_list.add(in);
 				else break;
 			} catch (IOException e) { /* Do nothing */}
 		}
-		return s;
+		String input = "";
+		for(byte byte_char : byte_list) {
+			input += (char) byte_char;
+    }
+		return input;
 	}
 
 	public void send(String message) {
-		try { 
+		try {
 			dOut.writeBytes(message);
 		} catch(IOException e) {}
 	}
