@@ -129,9 +129,6 @@ class Receive(Thread):
             i += 1
         return message
 
-    def get_tags(self, line):
-        return line
-
     # 6. saving input message to file
     def save(self, message):
         if self.settings['LOGGING'] == True:
